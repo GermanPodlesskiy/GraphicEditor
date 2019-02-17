@@ -5,8 +5,10 @@ using System.Windows.Media;
 
 namespace GraphicEditor.Shapes
 {
-    class Square : Rectangle
+    [Serializable]
+    public class Square : Rectangle
     {
+        public Square() { }
         public Square(Point firstPoint, Point secondPoint, Brush color, double thickness)
             : base(firstPoint, secondPoint, color, thickness) { }
 

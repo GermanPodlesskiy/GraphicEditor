@@ -3,19 +3,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-
 namespace GraphicEditor.Shapes
 {
-    [Serializable]
-    public class Rectangle : Figure
+    class Ellipse : Figure
     {
         protected int width, height;
 
-        public Rectangle() { }
-        public Rectangle(Point firstPoint, Point secondPoint, Brush color, double thickness)
-            : base(firstPoint,secondPoint,color,thickness) { }
-
-        protected void InitializeSize()
+        public Ellipse(Point firstPoint, Point secondPoint, Brush color, double thickness)
+            : base(firstPoint,secondPoint, color, thickness)
         {
             width = (int)Math.Abs(secondPoint.X - firstPoint.X);
             height = (int)Math.Abs(secondPoint.Y - firstPoint.Y);
@@ -23,9 +18,7 @@ namespace GraphicEditor.Shapes
 
         public override void Draw(Canvas canvas)
         {
-           
-            InitializeSize();
-            System.Windows.Shapes.Rectangle rectangle = new System.Windows.Shapes.Rectangle()
+            System.Windows.Shapes.Ellipse ellipse = new System.Windows.Shapes.Ellipse()
             {
                 Height = height,
                 Width = width,
@@ -34,11 +27,10 @@ namespace GraphicEditor.Shapes
             };
 
             var point = StartPoint();
-            Canvas.SetLeft(rectangle, point.Item1);
-            Canvas.SetTop(rectangle, point.Item2);
-            canvas.Children.Add(rectangle);
+            Canvas.SetLeft(ellipse, point.Item1);
+            Canvas.SetTop(ellipse, point.Item2);
+            canvas.Children.Add(ellipse);
         }
-
         protected (double, double) StartPoint()
         {
             if ((firstPoint.X < secondPoint.X) && (firstPoint.Y < secondPoint.Y))
@@ -49,7 +41,7 @@ namespace GraphicEditor.Shapes
             {
                 return (firstPoint.X, secondPoint.Y);
             }
-            else if((firstPoint.X > secondPoint.X) && (firstPoint.Y > secondPoint.Y))
+            else if ((firstPoint.X > secondPoint.X) && (firstPoint.Y > secondPoint.Y))
             {
                 return (secondPoint.X, secondPoint.Y);
             }

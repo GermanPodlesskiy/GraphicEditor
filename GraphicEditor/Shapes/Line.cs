@@ -1,11 +1,15 @@
-﻿using System.Windows;
+﻿using System;
+using System.Runtime.Serialization;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace GraphicEditor.Shapes
 {
-    class Line : Figure
+    [Serializable]
+    public class Line : Figure
     {
+        public Line() { }
         public Line(Point firstPoint, Point secondPoint, Brush color, double thickness)
             : base(firstPoint, secondPoint, color, thickness) { }
 

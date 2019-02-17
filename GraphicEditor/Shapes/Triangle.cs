@@ -4,12 +4,14 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace GraphicEditor.Shapes
-{
-    class Triangle : Figure
+{   
+    [Serializable]
+    public class Triangle : Figure
     {
         PointCollection points = new PointCollection();
         Point left, up, right;
 
+        public Triangle() { }
         public Triangle(Point firstPoint, Point secondPoint, Brush color, double thickness) 
             : base(firstPoint,secondPoint, color, thickness){ }
 

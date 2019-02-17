@@ -12,26 +12,51 @@
             <GradientStop Color="#FFFFE0E0" Offset="1"/>
         </LinearGradientBrush>
     </Window.Background>
-    <Grid HorizontalAlignment="Left" Height="675" Margin="-4,-2,-4,-4" VerticalAlignment="Top" Width="900">
-        <Grid HorizontalAlignment="Left" Height="128" Margin="4,547,-4,0" VerticalAlignment="Top" Width="900">
-            <Button x:Name="Clear" Content="Clear" HorizontalAlignment="Left" Margin="704,90,0,0" VerticalAlignment="Top" Width="74" Click="Clear_Click"/>
-            <Button x:Name="SaveAs" Content="SaveAs" HorizontalAlignment="Left" Margin="802,91,0,0" VerticalAlignment="Top" Width="74" Click="SaveAs_Click"/>
-            <Label x:Name="labelX" Content="X =" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="61" Height="26"/>
-            <Label x:Name="labelY" Content="Y =" HorizontalAlignment="Left" Margin="71,10,0,0" VerticalAlignment="Top" Width="56"/>
-            <Image x:Name="linePicture" Source="Pictures/../Pictures/Line.jpg" HorizontalAlignment="Left" Height="25" Margin="10,36,0,0" VerticalAlignment="Top" Width="25" Tag="0" MouseDown="Picture_MouseDown"/>
-            <Image x:Name="circlePicture" Source="Pictures/Circle.jpg" HorizontalAlignment="Left" Height="25" Margin="71,36,0,0" VerticalAlignment="Top" Width="25" Tag="1" MouseDown="Picture_MouseDown"/>
-            <Image x:Name="ellipsePicture" Source="Pictures/Ellipse.jpg" HorizontalAlignment="Left" Height="25" Margin="40,36,0,0" VerticalAlignment="Top" Width="25" Tag="2" MouseDown="Picture_MouseDown"/>
-            <Image x:Name="rectanglePicture" Source="Pictures/Rectangle.jpg" HorizontalAlignment="Left" Height="25" Margin="101,36,0,0" VerticalAlignment="Top" Width="25" Tag="3" MouseDown="Picture_MouseDown"/>
-            <Image x:Name="squarePicture" Source="Pictures/Square.jpg" HorizontalAlignment="Left" Height="25" Margin="10,72,0,0" VerticalAlignment="Top" Width="25" Tag="4" MouseDown="Picture_MouseDown"/>
-            <Image x:Name="trianglePicture" Source="Pictures/Triangle.jpg" HorizontalAlignment="Left" Height="25" Margin="40,72,0,0" VerticalAlignment="Top" Width="25" Tag="5" MouseDown="Picture_MouseDown"/>
-            <Image x:Name="rightTrianglePicture" Source="Pictures/RightTriangle.jpg" HorizontalAlignment="Left" Height="25" Margin="71,72,0,0" VerticalAlignment="Top" Width="25" Tag="6" MouseDown="Picture_MouseDown"/>
-            <Image x:Name="redoPicture" Source="Pictures/Redo.jpg" HorizontalAlignment="Left" Height="25" Margin="214,36,0,0" VerticalAlignment="Top" Width="25" MouseDown="RedoPicture_MouseDown"/>
-            <Image x:Name="undoPicture" Source="Pictures/Undo.jpg" HorizontalAlignment="Left" Height="25" Margin="175,36,0,0" VerticalAlignment="Top" Width="25" MouseDown="UndoPicture_MouseDown" />
-            <Image x:Name="colorPicture" Source="Pictures/Color.jpg" HorizontalAlignment="Left" Height="25" Margin="175,72,0,0" VerticalAlignment="Top" Width="25" MouseDown="ColorPicture_MouseDown"/>
-            <Slider x:Name="sliderThickness" HorizontalAlignment="Left" Margin="326,49,0,0" VerticalAlignment="Top" Width="111" Maximum="100" Value="3"/>
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="535*"/>
+                <RowDefinition Height="111*"/>
+            </Grid.RowDefinitions>
+            <DockPanel Grid.Row="0">
+                <Menu DockPanel.Dock="Top" Background="#FFF6E0CD" Height="23">
+                    <MenuItem Header="_File" Height="23" Width="51" Background="#FFF5E0CA" BorderBrush="#FFF5A36F" OpacityMask="White">
+                        <MenuItem Header="_Open" Background="White" Click="MenuItem_Click_1"/>
+                        <MenuItem Header="_Save as..." Click="MenuItem_Click" Background="White"/>
+                        <MenuItem Header="_Close" Background="White"/>
+                    </MenuItem>
+                </Menu>
+                <StackPanel></StackPanel>
+            </DockPanel>
+            <Canvas ClipToBounds="True" x:Name="CanvasMain"  Grid.Row="1" Margin="0,0,0,1" Cursor="Arrow" Background="White" MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove"/>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="127" />
+                    <ColumnDefinition Width="Auto" MinWidth="66"/>
+                    <ColumnDefinition Width="Auto" MinWidth="127"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="64"/>
+                    <RowDefinition Height="Auto" MinHeight="27"/>
+                </Grid.RowDefinitions>
+                <Button x:Name="Clear" Grid.Row="1" Grid.Column="2" Content="Clear" HorizontalAlignment="Stretch" Margin="10,10,43,1" Width="Auto" Click="Clear_Click"/>
+                <Label x:Name="LabelX" Grid.Row="0" Grid.Column="0" Content="X =" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="61" Height="26"/>
+                <Label x:Name="LabelY" Grid.Row="0" Grid.Column="0" Content="Y =" HorizontalAlignment="Left" Margin="71,10,0,0" VerticalAlignment="Top" Width="56" Height="26"/>
+                <Image x:Name="LinePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/../Pictures/Line.jpg" HorizontalAlignment="Left" Height="25" Margin="10,36,0,0" VerticalAlignment="Top" Width="25" Tag="0" MouseDown="Picture_MouseDown"/>
+                <Image x:Name="EllipsePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Ellipse.jpg" HorizontalAlignment="Left" Height="25" Margin="40,36,0,0" VerticalAlignment="Top" Width="25" Tag="2" MouseDown="Picture_MouseDown"/>
+                <Image x:Name="CirclePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Circle.jpg" HorizontalAlignment="Left" Height="25" Margin="71,36,0,0" VerticalAlignment="Top" Width="25" Tag="1" MouseDown="Picture_MouseDown"/>
+                <Image x:Name="RectanglePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Rectangle.jpg" HorizontalAlignment="Left" Height="25" Margin="101,36,0,0" VerticalAlignment="Top" Width="25" Tag="3" MouseDown="Picture_MouseDown"/>
+                <Image x:Name="SquarePicture" Grid.Row="1" Grid.Column="0" Source="Pictures/Square.jpg" HorizontalAlignment="Left" Height="25" Margin="10,5,0,0" VerticalAlignment="Top" Width="25" Tag="4" MouseDown="Picture_MouseDown"/>
+                <Image x:Name="TrianglePicture" Grid.Row="1" Grid.Column="0" Source="Pictures/Triangle.jpg" HorizontalAlignment="Left" Height="25" Margin="40,5,0,0" VerticalAlignment="Top" Width="25" Tag="5" MouseDown="Picture_MouseDown"/>
+                <Image x:Name="RightTrianglePicture"  Grid.Row="1" Grid.Column="0" Source="Pictures/RightTriangle.jpg" HorizontalAlignment="Left" Height="25" Margin="71,5,0,0" VerticalAlignment="Top" Width="25" Tag="6" MouseDown="Picture_MouseDown" />
+                <Image x:Name="RedoPicture" Grid.Row="0" Grid.Column="1" Source="Pictures/Redo.jpg" HorizontalAlignment="Left" Margin="76,36,0,2" Width="25" MouseDown="RedoPicture_MouseDown"/>
+                <Image x:Name="UndoPicture" Grid.Row="0" Grid.Column="1" Source="Pictures/Undo.jpg" HorizontalAlignment="Left" Margin="34,36,0,1" Width="25" MouseDown="UndoPicture_MouseDown"/>
+                <Slider x:Name="SliderThickness" Grid.Row="0" Grid.Column="2" Margin="10,43,6,4" Maximum="100" Value="3"/>
+                <Border x:Name="ColorBorder"  Grid.Row="1" Grid.Column="1" BorderThickness="1" HorizontalAlignment="Left" Margin="32,4,0,1" Width="70" Background="#FF2A2AEC" MouseDown="ColorBorder_MouseDown" Grid.ColumnSpan="2"/>
+            </Grid>
 
         </Grid>
-
-        <Canvas ClipToBounds="True" x:Name="canvas" HorizontalAlignment="Left" Height="542" Margin="4,0,0,0" VerticalAlignment="Top" Width="892" Cursor="Arrow" Background="White" MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove"/>
     </Grid>
 </Window>

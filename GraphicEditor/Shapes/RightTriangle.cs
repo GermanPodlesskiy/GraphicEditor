@@ -5,11 +5,13 @@ using System.Windows.Media;
 
 namespace GraphicEditor.Shapes
 {
-    class RightTriangle : Triangle
+    [Serializable]
+    public class RightTriangle : Triangle
     {
         PointCollection points = new PointCollection();
         Point left, up, right;
 
+        public RightTriangle() { }
         public RightTriangle(Point firstPoint, Point secondPoint, Brush color, double thickness)
             : base(firstPoint, secondPoint, color, thickness) { }
 
