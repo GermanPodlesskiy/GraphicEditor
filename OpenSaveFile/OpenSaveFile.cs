@@ -125,7 +125,7 @@ namespace OpenSaveFile
                 jpegEnc.Frames.Add(BitmapFrame.Create(rtb));
                 jpegEnc.Save(fs);
                 obj.LayoutTransform = transform;
-                margin.Top = 0.01;                       // Change!!!!!!!!
+                margin.Top = 0.0;
                 obj.Margin = margin;
 
                 return "File saved, " + saveFile.FileName;
