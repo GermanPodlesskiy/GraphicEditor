@@ -53,7 +53,7 @@ namespace GraphicEditor.Shapes
                 StrokeThickness = Thickness
             };
 
-            var point = StartPoint();
+            (double,double) point = StartPoint();
             Canvas.SetLeft(ellipse, point.Item1);
             Canvas.SetTop(ellipse, point.Item2);
             canvas.Children.Add(ellipse);

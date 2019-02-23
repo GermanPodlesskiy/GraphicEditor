@@ -20,9 +20,9 @@ namespace OpenSaveFile
     {
         public static T OpenDAT<T>(OpenFileDialog openFile) where T : class
         {
-            using (FileStream fs = new FileStream(openFile.FileName, FileMode.Open))
+            using (var fs = new FileStream(openFile.FileName, FileMode.Open))
             {
-                BinaryFormatter formatter = new BinaryFormatter();
+                var formatter = new BinaryFormatter();
                 try
                 {
                     return (T)formatter.Deserialize(fs);
@@ -34,9 +34,9 @@ namespace OpenSaveFile
         }
         public static T OpenJSON<T>(OpenFileDialog openFile) where T : class
         {
-            using (FileStream fs = new FileStream(openFile.FileName, FileMode.Open))
+            using (var fs = new FileStream(openFile.FileName, FileMode.Open))
             {
-                DataContractJsonSerializer formatter = new DataContractJsonSerializer(typeof(T));
+                var formatter = new DataContractJsonSerializer(typeof(T));
                 try
                 {
                     return (T) formatter.ReadObject(fs);
@@ -48,9 +48,9 @@ namespace OpenSaveFile
         }
         public static T OpenXML<T>(OpenFileDialog saveFile) where T : class
         {
-            using (FileStream fs = new FileStream(saveFile.FileName, FileMode.Open))
+            using (var fs = new FileStream(saveFile.FileName, FileMode.Open))
             {
-                XmlSerializer formatter = new XmlSerializer(typeof(T));
+                var formatter = new XmlSerializer(typeof(T));
                 try
                 {
                     return (T) formatter.Deserialize(fs);
@@ -62,11 +62,13 @@ namespace OpenSaveFile
         }
         public static void OpenJPEG<T>(OpenFileDialog openFile, T obj) where T : Panel
         {
-            BitmapImage bmp = new BitmapImage(new Uri(openFile.FileName));
-            Image image = new Image();
-            image.Source = bmp;
-            image.Width = bmp.Width;
-            image.Height = bmp.Height;
+            var bmp = new BitmapImage(new Uri(openFile.FileName));
+            var image = new Image()
+            {
+                Source = bmp,
+                Width = bmp.Width,
+                Height = bmp.Height
+            };
             obj.Children.Clear();
             obj.Children.Add(image);
         }
@@ -77,34 +79,34 @@ namespace OpenSaveFile
     {
         public static string SaveDAT<T>(SaveFileDialog saveFile, T obj)
         {
-            using (FileStream fs = new FileStream(saveFile.FileName, FileMode.Create))
+            using (var fs = new FileStream(saveFile.FileName, FileMode.Create))
             {
-                BinaryFormatter formatter = new BinaryFormatter();
+                var formatter = new BinaryFormatter();
                 formatter.Serialize(fs, obj);
                 return "File saved, " + saveFile.FileName;
             }
         }
         public static string SaveJSON<T>(SaveFileDialog saveFile, T obj)
         {
-            using (FileStream fs = new FileStream(saveFile.FileName, FileMode.Create))
+            using (var fs = new FileStream(saveFile.FileName, FileMode.Create))
             {
-                DataContractJsonSerializer formatter = new DataContractJsonSerializer(typeof(T));
+                var formatter = new DataContractJsonSerializer(typeof(T));
                 formatter.WriteObject(fs, obj);
                 return "File saved, " + saveFile.FileName;
             }
         }
         public static string SaveXML<T>(SaveFileDialog saveFile, T obj)
         {
-            using (FileStream fs = new FileStream(saveFile.FileName, FileMode.Create))
+            using (var fs = new FileStream(saveFile.FileName, FileMode.Create))
             {
-                XmlSerializer formatter = new XmlSerializer(typeof(T));
+                var formatter = new XmlSerializer(typeof(T));
                 formatter.Serialize(fs, obj);
                 return "File saved, " + saveFile.FileName;
             }
         }
         public static string SaveJPEG<T>(SaveFileDialog saveFile, T obj) where T : Panel
         {
-            using (FileStream fs = new FileStream(saveFile.FileName, FileMode.CreateNew))
+            using (var fs = new FileStream(saveFile.FileName, FileMode.OpenOrCreate))
             {
                 Transform transform = obj.LayoutTransform;
                 obj.LayoutTransform = null;
@@ -113,19 +115,19 @@ namespace OpenSaveFile
                 obj.Margin = new Thickness(0,0,
                 margin.Right - margin.Left, margin.Bottom - margin.Top);
 
-                Size size = new Size(obj.ActualWidth, obj.ActualHeight);
+                var size = new Size(obj.ActualWidth, obj.ActualHeight);
 
                 obj.Measure(size);
                 obj.Arrange(new Rect(size));
 
-                RenderTargetBitmap rtb = new RenderTargetBitmap((int)obj.ActualWidth, (int)obj.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                var rtb = new RenderTargetBitmap((int)obj.ActualWidth, (int)obj.ActualHeight, 96, 96, PixelFormats.Pbgra32);
                 rtb.Render(obj);
 
-                JpegBitmapEncoder jpegEnc = new JpegBitmapEncoder();
+                var jpegEnc = new JpegBitmapEncoder();
                 jpegEnc.Frames.Add(BitmapFrame.Create(rtb));
                 jpegEnc.Save(fs);
                 obj.LayoutTransform = transform;
-                margin.Top = 0.0;
+                margin.Top = 0.01;
                 obj.Margin = margin;
 
                 return "File saved, " + saveFile.FileName;

@@ -33,7 +33,7 @@ namespace GraphicEditor.Shapes
                 StrokeThickness = thickness
             };
 
-            var point = StartPoint();
+            (double,double) point = StartPoint();
             Canvas.SetLeft(rectangle, point.Item1);
             Canvas.SetTop(rectangle, point.Item2);
             canvas.Children.Add(rectangle);

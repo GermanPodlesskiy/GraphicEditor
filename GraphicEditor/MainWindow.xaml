@@ -54,7 +54,7 @@
                 <Image x:Name="RedoPicture" Grid.Row="0" Grid.Column="1" Source="Pictures/Redo.jpg" HorizontalAlignment="Left" Margin="76,36,0,2" Width="25" MouseDown="RedoPicture_MouseDown"/>
                 <Image x:Name="UndoPicture" Grid.Row="0" Grid.Column="1" Source="Pictures/Undo.jpg" HorizontalAlignment="Left" Margin="34,36,0,1" Width="25" MouseDown="UndoPicture_MouseDown"/>
                 <Slider x:Name="SliderThickness" Grid.Row="0" Grid.Column="2" Margin="10,43,6,4" Maximum="100" Value="3"/>
-                <Border x:Name="ColorBorder"  Grid.Row="1" Grid.Column="1" BorderThickness="1" HorizontalAlignment="Left" Margin="32,4,0,1" Width="70" Background="#FF2A2AEC" MouseDown="ColorBorder_MouseDown" Grid.ColumnSpan="2"/>
+                <Border x:Name="ColorBorder"  Grid.Row="1" Grid.Column="1" BorderThickness="1" HorizontalAlignment="Left" Margin="32,4,0,1" Width="70" Background="Blue" MouseDown="ColorBorder_MouseDown" Grid.ColumnSpan="2"/>
             </Grid>
 
         </Grid>

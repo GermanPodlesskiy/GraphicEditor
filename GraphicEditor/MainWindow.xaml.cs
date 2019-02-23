@@ -52,7 +52,7 @@ namespace GraphicEditor
 
         private SaveFileDialog InitializeSaveFile(string fitler)
         {
-            SaveFileDialog file = new SaveFileDialog();
+            var file = new SaveFileDialog();
             file.Filter = $"{fitler} |*.{fitler}";
             file.AddExtension = true;
             file.Title = "Save file";
@@ -60,7 +60,7 @@ namespace GraphicEditor
         }
         private OpenFileDialog InitializeOpenFile(string fitler)
         {
-            OpenFileDialog file = new OpenFileDialog();
+            var file = new OpenFileDialog();
             file.Filter = $"{fitler} |*.{fitler}";
             file.AddExtension = true;
             file.Title = "Open file";
@@ -143,7 +143,7 @@ namespace GraphicEditor
 
         private void ColorBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            ColorDialog dlg = new ColorDialog();
+            var dlg = new ColorDialog();
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 color = new SolidColorBrush(Color.FromArgb(dlg.Color.A, dlg.Color.R, dlg.Color.G, dlg.Color.B));
@@ -153,7 +153,7 @@ namespace GraphicEditor
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            SerializationWindow serializationWindow = new SerializationWindow();
+            var serializationWindow = new SerializationWindow();
             if (serializationWindow.ShowDialog() == true)
             {
                 SaveFileDialog saveFile = InitializeSaveFile(serializationWindow.TypeSerialization);
@@ -184,15 +184,11 @@ namespace GraphicEditor
                     else MessageBox.Show(SaveTXT(saveFile, shape)); ;
                 }
             }
-            else
-            {
-                MessageBox.Show("No view selected");
-            }
         }
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
-            SerializationWindow serializationWindow = new SerializationWindow();
+            var serializationWindow = new SerializationWindow();
             if (serializationWindow.ShowDialog() == true)
             {
                 CanvasMain.Children.Clear();
@@ -247,7 +243,7 @@ namespace GraphicEditor
 
         private void Picture_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Image image = sender as Image;
+            var image = sender as Image;
             tag = Convert.ToUInt16(image.Tag);
         }
 
@@ -262,7 +258,7 @@ namespace GraphicEditor
         }
         private string SaveTXT(SaveFileDialog saveFile, Shape shape)
         {
-            using (StreamWriter sw = new StreamWriter(saveFile.FileName, false, Encoding.Default))
+            using (var sw = new StreamWriter(saveFile.FileName, false, Encoding.Default))
             {
                 if (shape?.Figures != null)
                     foreach (var figure in shape.Figures)
@@ -321,7 +317,7 @@ namespace GraphicEditor
         private Color ToColor(string colorLine)
         {
             colorLine = colorLine.Remove(0, 1);
-            Color color = new Color();
+            var color = new Color();
             color.A = Convert.ToByte(new String(new char[]{colorLine[0],colorLine[1]}),16);
             color.R = Convert.ToByte(new String(new char[]{colorLine[2],colorLine[3]}),16);
             color.G = Convert.ToByte(new String(new char[]{colorLine[4],colorLine[5]}),16);
