@@ -1,2 +1,2 @@
 # GraphicEditor
-Object Oriented Programming, lab #1-#2
+Object Oriented Programming
