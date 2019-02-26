@@ -222,6 +222,7 @@ namespace GraphicEditor
                         if (serializationWindow.TypeSerialization != "jpeg")
                         {
                             Parser(shape);
+                            tag = 0;
                         }
                     }
                     catch (Exception)

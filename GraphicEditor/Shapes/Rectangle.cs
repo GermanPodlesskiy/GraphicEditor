@@ -12,8 +12,9 @@ namespace GraphicEditor.Shapes
         protected int width, height;
 
         public Rectangle() { }
+
         public Rectangle(Point firstPoint, Point secondPoint, Brush color, double thickness)
-            : base(firstPoint,secondPoint,color,thickness) { }
+            : base(firstPoint, secondPoint, color, thickness) { InitializeSize(); }
 
         protected void InitializeSize()
         {
@@ -23,8 +24,6 @@ namespace GraphicEditor.Shapes
 
         public override void Draw(Canvas canvas)
         {
-           
-            InitializeSize();
             System.Windows.Shapes.Rectangle rectangle = new System.Windows.Shapes.Rectangle()
             {
                 Height = height,
