@@ -25,9 +25,12 @@ namespace OpenSaveFile
                 var formatter = new BinaryFormatter();
                 try
                 {
-                    return (T)formatter.Deserialize(fs);
+                    return (T) formatter.Deserialize(fs);
                 }
-                catch (Exception){}
+                catch (Exception)
+                {
+                    throw;
+                }
                 
                 return null;
             }
@@ -41,7 +44,10 @@ namespace OpenSaveFile
                 {
                     return (T) formatter.ReadObject(fs);
                 }
-                catch (Exception){}
+                catch (Exception)
+                {
+                    throw;
+                }
 
                 return null;
             }
@@ -55,7 +61,10 @@ namespace OpenSaveFile
                 {
                     return (T) formatter.Deserialize(fs);
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                    throw;
+                }
 
                 return null;
             }
