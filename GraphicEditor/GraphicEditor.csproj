@@ -42,6 +42,13 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
+    </Reference>
     <Reference Include="System.Private.DataContractSerialization, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Private.DataContractSerialization.4.3.0\lib\netstandard1.3\System.Private.DataContractSerialization.dll</HintPath>
     </Reference>
@@ -153,9 +160,9 @@
     <Resource Include="Pictures\Undo.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenSaveFile\OpenSaveFile.csproj">
-      <Project>{cc74040c-5de6-4682-b1c6-042cee97caa1}</Project>
-      <Name>OpenSaveFile</Name>
+    <ProjectReference Include="..\SerializerInterface\SerializerInterface.csproj">
+      <Project>{e2828bc7-e7ad-4f08-9869-ef5daf21b4d4}</Project>
+      <Name>SerializerInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

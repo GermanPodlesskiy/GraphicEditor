@@ -13,11 +13,11 @@
                 <ColumnDefinition Width="177*"/>
                 <ColumnDefinition Width="115*"/>
             </Grid.ColumnDefinitions>
-            <RadioButton x:Name="datFormatter" Content="Binary" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" IsChecked="True" Margin="10,16,0,0" Background="White" Foreground="Black" BorderBrush="Black"/>
-            <RadioButton x:Name="xmlFormatter" Content="XML" HorizontalAlignment="Left" Height="16" Margin="67,16,0,0" VerticalAlignment="Top" Background="White"/>
-            <RadioButton x:Name="txtFormatter" Content="TXT" HorizontalAlignment="Left" Height="16" Margin="176,16,0,0" VerticalAlignment="Top" Background="White" Grid.ColumnSpan="2"/>
-            <RadioButton x:Name="jsonFormatter" Content="JSON" HorizontalAlignment="Left" Height="16" Margin="115,16,0,0" VerticalAlignment="Top" Background="White"/>
-            <RadioButton x:Name="jpegFormatter" Content="JPEG" HorizontalAlignment="Left" Height="16" Margin="49.433,16,0,0" VerticalAlignment="Top" Background="White" Grid.Column="1"/>
+            <RadioButton x:Name="DatFormatter" Content="Binary" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" IsChecked="True" Margin="10,16,0,0" Background="White" Foreground="Black" BorderBrush="Black"/>
+            <RadioButton x:Name="XmlFormatter" Content="XML" HorizontalAlignment="Left" Height="16" Margin="67,16,0,0" VerticalAlignment="Top" Background="White"/>
+            <RadioButton x:Name="TxtFormatter" Content="TXT" HorizontalAlignment="Left" Height="16" Margin="176,16,0,0" VerticalAlignment="Top" Background="White" Grid.ColumnSpan="2"/>
+            <RadioButton x:Name="JsonFormatter" Content="JSON" HorizontalAlignment="Left" Height="16" Margin="115,16,0,0" VerticalAlignment="Top" Background="White"/>
+            <RadioButton x:Name="JpegFormatter" Content="JPEG" HorizontalAlignment="Left" Height="16" Margin="49.433,16,0,0" VerticalAlignment="Top" Background="White" Grid.Column="1"/>
         </Grid>
         <Button x:Name="Accept"  IsDefault="True"  Content="Ok" Margin="61,90,166,0" Background="#FFFFCBCB" Height="24" VerticalAlignment="Top" Click="Accept_Click" BorderBrush="#FFF9B982"/>
         <Button x:Name="Cancel"  IsCancel="True"  Content="Cancel" Margin="161,90,66,0" Background="#FFFFCBCB" Height="24" VerticalAlignment="Top" BorderBrush="#FFF9B982"/>

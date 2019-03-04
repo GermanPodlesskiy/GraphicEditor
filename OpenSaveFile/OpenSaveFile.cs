@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -16,113 +20,190 @@ using Microsoft.Win32;
 
 namespace OpenSaveFile
 {
-    public class Open
+    public static class Archive
     {
-        public static T OpenDAT<T>(OpenFileDialog openFile) where T : class
+        public static string SaveArchive(string fileName, string safeFileName, string filter)
         {
-            using (var fs = new FileStream(openFile.FileName, FileMode.Open))
+            string zipFileName = Regex.Replace(fileName, filter, "zip");
+            using (var fs = new FileStream(zipFileName, FileMode.Create))
+            using (var archive = new ZipArchive(fs, ZipArchiveMode.Create))
             {
-                var formatter = new BinaryFormatter();
-                try
-                {
-                    return (T) formatter.Deserialize(fs);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                
-                return null;
+                archive.CreateEntryFromFile(fileName,safeFileName);
+                return "File saved, " + fileName;
             }
         }
-        public static T OpenJSON<T>(OpenFileDialog openFile) where T : class
+        public static OpenFileDialog InitializeOpenFile(string filter)
         {
-            using (var fs = new FileStream(openFile.FileName, FileMode.Open))
-            {
-                var formatter = new DataContractJsonSerializer(typeof(T));
-                try
-                {
-                    return (T) formatter.ReadObject(fs);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-
-                return null;
-            }
+            var file = new OpenFileDialog();
+            file.Filter = $"{filter} |*.{filter}";
+            file.AddExtension = true;
+            file.Title = "Open file";
+            return file;
         }
-        public static T OpenXML<T>(OpenFileDialog saveFile) where T : class
+        public static void Unarchive(OpenFileDialog archive, string filter)
         {
-            using (var fs = new FileStream(saveFile.FileName, FileMode.Open))
+            try
             {
-                var formatter = new XmlSerializer(typeof(T));
-                try
+                using (ZipArchive zip = ZipFile.Open(archive.FileName, ZipArchiveMode.Read))
                 {
-                    return (T) formatter.Deserialize(fs);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                        if (entry.FullName.EndsWith($".{filter}", StringComparison.OrdinalIgnoreCase))
+                        {
+                            string path = archive.FileName;
+                            path = (path.Replace(archive.SafeFileName, ""));
+                            path = path.Remove(path.Length - 1, 1) + $"\\{entry.Name}";
+                            entry.ExtractToFile(path);
+                        }
                 }
-                catch (Exception)
-                {
-                    throw;
-                }
-
-                return null;
             }
-        }
-        public static void OpenJPEG<T>(OpenFileDialog openFile, T obj) where T : Panel
-        {
-            var bmp = new BitmapImage(new Uri(openFile.FileName));
-            var image = new Image()
+            catch (Exception ex)
             {
-                Source = bmp,
-                Width = bmp.Width,
-                Height = bmp.Height
-            };
-            obj.Children.Clear();
-            obj.Children.Add(image);
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 
-    
-    public class Save
+    public class Dat : SerializerInterface.ISerializer
     {
-        public static string SaveDAT<T>(SaveFileDialog saveFile, T obj)
+        public T Deserialize<T>(OpenFileDialog archive, string filter) where T : class
+        {
+            Archive.Unarchive(archive, filter);
+            OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
+            if (openFile.ShowDialog() == true)
+            {
+                using (var fs = new FileStream(openFile.FileName, FileMode.Open))
+                {
+                    var formatter = new BinaryFormatter();
+                    try
+                    {
+                        return (T)formatter.Deserialize(fs);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public string Serialize<T>(SaveFileDialog saveFile, T obj) where T : class
         {
             using (var fs = new FileStream(saveFile.FileName, FileMode.Create))
             {
                 var formatter = new BinaryFormatter();
                 formatter.Serialize(fs, obj);
-                return "File saved, " + saveFile.FileName;
             }
+
+            return Archive.SaveArchive(saveFile.FileName, saveFile.SafeFileName, "dat");
         }
-        public static string SaveJSON<T>(SaveFileDialog saveFile, T obj)
+    }
+
+    public class Json : SerializerInterface.ISerializer
+    {
+        public T Deserialize<T>(OpenFileDialog archive, string filter) where T : class
+        {
+            Archive.Unarchive(archive, filter);
+            OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
+            if (openFile.ShowDialog() == true)
+            {
+                using (var fs = new FileStream(openFile.FileName, FileMode.Open))
+                {
+                    var formatter = new DataContractJsonSerializer(typeof(T));
+                    try
+                    {
+                        return (T) formatter.ReadObject(fs);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public string Serialize<T>(SaveFileDialog saveFile, T obj) where T : class
         {
             using (var fs = new FileStream(saveFile.FileName, FileMode.Create))
             {
                 var formatter = new DataContractJsonSerializer(typeof(T));
                 formatter.WriteObject(fs, obj);
-                return "File saved, " + saveFile.FileName;
             }
+
+            return Archive.SaveArchive(saveFile.FileName, saveFile.SafeFileName, "json");
         }
-        public static string SaveXML<T>(SaveFileDialog saveFile, T obj)
+    }
+    public class Xml : SerializerInterface.ISerializer
+    {
+        public T Deserialize<T>(OpenFileDialog archive, string filter) where T : class
+        {
+            Archive.Unarchive(archive, filter);
+            OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
+            if (openFile.ShowDialog() == true)
+            {
+                using (var fs = new FileStream(openFile.FileName, FileMode.Open))
+                {
+                    var formatter = new XmlSerializer(typeof(T));
+                    try
+                    {
+                        return (T) formatter.Deserialize(fs);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public string Serialize<T>(SaveFileDialog saveFile, T obj) where T : class
         {
             using (var fs = new FileStream(saveFile.FileName, FileMode.Create))
             {
                 var formatter = new XmlSerializer(typeof(T));
                 formatter.Serialize(fs, obj);
-                return "File saved, " + saveFile.FileName;
+            }
+
+            return Archive.SaveArchive(saveFile.FileName, saveFile.SafeFileName, "xml");
+        }
+    }
+
+    public class Jpeg : SerializerInterface.IJpegFile
+    {
+        public void Deserialize<T>(OpenFileDialog archive, T obj) where T : Panel
+        {
+            Archive.Unarchive(archive, "Jpeg");
+            OpenFileDialog openFile = Archive.InitializeOpenFile("jpeg");
+            if (openFile.ShowDialog() == true)
+            {
+                var bmp = new BitmapImage(new Uri(openFile.FileName));
+                var image = new Image()
+                {
+                    Source = bmp,
+                    Width = bmp.Width,
+                    Height = bmp.Height
+                };
+
+                obj.Children.Clear();
+                obj.Children.Add(image);
             }
         }
-        public static string SaveJPEG<T>(SaveFileDialog saveFile, T obj) where T : Panel
+        public string Serialize<T>(SaveFileDialog saveFile, T obj) where T : Panel
         {
+
             using (var fs = new FileStream(saveFile.FileName, FileMode.OpenOrCreate))
             {
                 Transform transform = obj.LayoutTransform;
                 obj.LayoutTransform = null;
 
                 Thickness margin = obj.Margin;
-                obj.Margin = new Thickness(0,0,
-                margin.Right - margin.Left, margin.Bottom - margin.Top);
+                obj.Margin = new Thickness(0, 0,
+                    margin.Right - margin.Left, margin.Bottom - margin.Top);
 
                 var size = new Size(obj.ActualWidth, obj.ActualHeight);
 
@@ -138,9 +219,8 @@ namespace OpenSaveFile
                 obj.LayoutTransform = transform;
                 margin.Top = 0.01;
                 obj.Margin = margin;
-
-                return "File saved, " + saveFile.FileName;
             }
+            return Archive.SaveArchive(saveFile.FileName, saveFile.SafeFileName, "jpeg");
         }
     }
 }

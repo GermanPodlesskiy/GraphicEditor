@@ -12,8 +12,9 @@ namespace GraphicEditor.Shapes
         protected DrawingEllipse drEl = new DrawingEllipse();
 
         public Ellipse() { }
+
         public Ellipse(Point firstPoint, Point secondPoint, Brush color, double thickness)
-            : base(firstPoint,secondPoint, color, thickness) { }
+            : base(firstPoint, secondPoint, color, thickness) { InitializeSize(); }
 
         protected void InitializeSize()
         {
@@ -23,7 +24,6 @@ namespace GraphicEditor.Shapes
 
         public override void Draw(Canvas canvas)
         {
-            InitializeSize();
             drEl.FirstPoint = firstPoint;
             drEl.SecondPoint = secondPoint;
             drEl.Color = color;

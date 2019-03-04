@@ -32,7 +32,7 @@ namespace GraphicEditor.Shapes
                 StrokeThickness = thickness
             };
 
-            (double,double) point = StartPoint();
+            (double, double) point = StartPoint();
             Canvas.SetLeft(rectangle, point.Item1);
             Canvas.SetTop(rectangle, point.Item2);
             canvas.Children.Add(rectangle);
@@ -40,15 +40,15 @@ namespace GraphicEditor.Shapes
 
         protected (double, double) StartPoint()
         {
-            if ((firstPoint.X < secondPoint.X) && (firstPoint.Y < secondPoint.Y))
+            if ((firstPoint.X < secondPoint.X) && (firstPoint.Y <= secondPoint.Y))
             {
                 return (firstPoint.X, firstPoint.Y);
             }
-            else if ((firstPoint.X < secondPoint.X) && (firstPoint.Y > secondPoint.Y))
+            else if ((firstPoint.X <= secondPoint.X) && (firstPoint.Y >= secondPoint.Y))
             {
                 return (firstPoint.X, secondPoint.Y);
             }
-            else if((firstPoint.X > secondPoint.X) && (firstPoint.Y > secondPoint.Y))
+            else if((firstPoint.X >= secondPoint.X) && (firstPoint.Y > secondPoint.Y))
             {
                 return (secondPoint.X, secondPoint.Y);
             }
