@@ -4,16 +4,17 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace GraphicEditor.Shapes
-{   
+{
     [Serializable]
     public class Triangle : Figure
     {
-        PointCollection points = new PointCollection();
-        Point left, up, right;
+        private PointCollection points = new PointCollection();
+        private Point left, up, right;
 
         public Triangle() { }
-        public Triangle(Point firstPoint, Point secondPoint, Brush color, double thickness) 
-            : base(firstPoint,secondPoint, color, thickness){ }
+
+        public Triangle(Point firstPoint, Point secondPoint, Brush color, double thickness)
+            : base(firstPoint, secondPoint, color, thickness) { }
 
         public override void Draw(Canvas canvas)
         {
@@ -57,8 +58,8 @@ namespace GraphicEditor.Shapes
             points.Add(up);
             points.Add(left);
             points.Add(right);
-            
-            System.Windows.Shapes.Polygon triangle = new System.Windows.Shapes.Polygon()
+
+            var triangle = new System.Windows.Shapes.Polygon()
             {
                 Points = points,
                 Stroke = color,

@@ -10,6 +10,7 @@ namespace GraphicEditor.Shapes
     public class Line : Figure
     {
         public Line() { }
+
         public Line(Point firstPoint, Point secondPoint, Brush color, double thickness)
             : base(firstPoint, secondPoint, color, thickness) { }
 

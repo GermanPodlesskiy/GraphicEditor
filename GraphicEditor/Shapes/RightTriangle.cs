@@ -8,10 +8,11 @@ namespace GraphicEditor.Shapes
     [Serializable]
     public class RightTriangle : Triangle
     {
-        PointCollection points = new PointCollection();
-        Point left, up, right;
+        private PointCollection points = new PointCollection();
+        private Point left, up, right;
 
         public RightTriangle() { }
+
         public RightTriangle(Point firstPoint, Point secondPoint, Brush color, double thickness)
             : base(firstPoint, secondPoint, color, thickness) { }
 
@@ -58,7 +59,7 @@ namespace GraphicEditor.Shapes
             points.Add(left);
             points.Add(right);
 
-            System.Windows.Shapes.Polygon triangle = new System.Windows.Shapes.Polygon()
+            var triangle = new System.Windows.Shapes.Polygon()
             {
                 Points = points,
                 Stroke = color,

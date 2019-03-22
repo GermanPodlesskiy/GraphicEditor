@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Json;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 
@@ -28,10 +21,11 @@ namespace OpenSaveFile
             using (var fs = new FileStream(zipFileName, FileMode.Create))
             using (var archive = new ZipArchive(fs, ZipArchiveMode.Create))
             {
-                archive.CreateEntryFromFile(fileName,safeFileName);
+                archive.CreateEntryFromFile(fileName, safeFileName);
                 return "File saved, " + fileName;
             }
         }
+
         public static OpenFileDialog InitializeOpenFile(string filter)
         {
             var file = new OpenFileDialog();
@@ -40,25 +34,25 @@ namespace OpenSaveFile
             file.Title = "Open file";
             return file;
         }
+
         public static void Unarchive(OpenFileDialog archive, string filter)
         {
             try
             {
-                using (ZipArchive zip = ZipFile.Open(archive.FileName, ZipArchiveMode.Read))
+                using (var zip = ZipFile.Open(archive.FileName, ZipArchiveMode.Read))
                 {
                     foreach (ZipArchiveEntry entry in zip.Entries)
                         if (entry.FullName.EndsWith($".{filter}", StringComparison.OrdinalIgnoreCase))
                         {
-                            string path = archive.FileName;
+                            var path = archive.FileName;
                             path = (path.Replace(archive.SafeFileName, ""));
                             path = path.Remove(path.Length - 1, 1) + $"\\{entry.Name}";
                             entry.ExtractToFile(path);
                         }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
             }
         }
     }
@@ -69,23 +63,13 @@ namespace OpenSaveFile
         {
             Archive.Unarchive(archive, filter);
             OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
-            if (openFile.ShowDialog() == true)
-            {
-                using (var fs = new FileStream(openFile.FileName, FileMode.Open))
-                {
-                    var formatter = new BinaryFormatter();
-                    try
-                    {
-                        return (T)formatter.Deserialize(fs);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                }
-            }
+            if (openFile.ShowDialog() != true) return null;
 
-            return null;
+            using (var fs = new FileStream(openFile.FileName, FileMode.Open))
+            {
+                var formatter = new BinaryFormatter();
+                return (T) formatter.Deserialize(fs);
+            }
         }
 
         public string Serialize<T>(SaveFileDialog saveFile, T obj) where T : class
@@ -106,23 +90,13 @@ namespace OpenSaveFile
         {
             Archive.Unarchive(archive, filter);
             OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
-            if (openFile.ShowDialog() == true)
-            {
-                using (var fs = new FileStream(openFile.FileName, FileMode.Open))
-                {
-                    var formatter = new DataContractJsonSerializer(typeof(T));
-                    try
-                    {
-                        return (T) formatter.ReadObject(fs);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                }
-            }
+            if (openFile.ShowDialog() != true) return null;
 
-            return null;
+            using (var fs = new FileStream(openFile.FileName, FileMode.Open))
+            {
+                var formatter = new DataContractJsonSerializer(typeof(T));
+                return (T) formatter.ReadObject(fs);
+            }
         }
 
         public string Serialize<T>(SaveFileDialog saveFile, T obj) where T : class
@@ -136,29 +110,20 @@ namespace OpenSaveFile
             return Archive.SaveArchive(saveFile.FileName, saveFile.SafeFileName, "json");
         }
     }
+
     public class Xml : SerializerInterface.ISerializer
     {
         public T Deserialize<T>(OpenFileDialog archive, string filter) where T : class
         {
             Archive.Unarchive(archive, filter);
             OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
-            if (openFile.ShowDialog() == true)
-            {
-                using (var fs = new FileStream(openFile.FileName, FileMode.Open))
-                {
-                    var formatter = new XmlSerializer(typeof(T));
-                    try
-                    {
-                        return (T) formatter.Deserialize(fs);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                }
-            }
+            if (openFile.ShowDialog() != true) return null;
 
-            return null;
+            using (var fs = new FileStream(openFile.FileName, FileMode.Open))
+            {
+                var formatter = new XmlSerializer(typeof(T));
+                return (T) formatter.Deserialize(fs);
+            }
         }
 
         public string Serialize<T>(SaveFileDialog saveFile, T obj) where T : class
@@ -193,9 +158,9 @@ namespace OpenSaveFile
                 obj.Children.Add(image);
             }
         }
+
         public string Serialize<T>(SaveFileDialog saveFile, T obj) where T : Panel
         {
-
             using (var fs = new FileStream(saveFile.FileName, FileMode.OpenOrCreate))
             {
                 Transform transform = obj.LayoutTransform;
@@ -210,7 +175,8 @@ namespace OpenSaveFile
                 obj.Measure(size);
                 obj.Arrange(new Rect(size));
 
-                var rtb = new RenderTargetBitmap((int)obj.ActualWidth, (int)obj.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                var rtb = new RenderTargetBitmap((int) obj.ActualWidth, (int) obj.ActualHeight, 96, 96,
+                    PixelFormats.Pbgra32);
                 rtb.Render(obj);
 
                 var jpegEnc = new JpegBitmapEncoder();
@@ -220,6 +186,7 @@ namespace OpenSaveFile
                 margin.Top = 0.01;
                 obj.Margin = margin;
             }
+
             return Archive.SaveArchive(saveFile.FileName, saveFile.SafeFileName, "jpeg");
         }
     }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -12,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml.Serialization;
 using GraphicEditor.Shapes;
 using SerializerInterface;
 using Ellipse = GraphicEditor.Shapes.Ellipse;
@@ -34,6 +31,7 @@ namespace GraphicEditor
     {
         public List<Figure> Figures { get; set; }
     }
+
     public partial class MainWindow : Window
     {
         private double x1, x2, y1, y2;
@@ -44,7 +42,7 @@ namespace GraphicEditor
         private Brush color = Brushes.Blue;
         private bool draw;
         private bool oneFigure;
-        private Shape shape = new Shape() { Figures = new List<Figure>() };
+        private Shape shape = new Shape() {Figures = new List<Figure>()};
         private Figure[] figuresType;
         private string nameOpenOnceJpeg;
 
@@ -55,18 +53,23 @@ namespace GraphicEditor
 
         private SaveFileDialog InitializeSaveFile(string filter)
         {
-            var file = new SaveFileDialog();
-            file.Filter = $"{filter} |*.{filter}";
-            file.AddExtension = true;
-            file.Title = "Save file";
+            var file = new SaveFileDialog
+            {
+                Filter = $"{filter} |*.{filter}",
+                AddExtension = true,
+                Title = "Save file"
+            };
             return file;
         }
+
         private OpenFileDialog InitializeOpenFile(string filter)
         {
-            var file = new OpenFileDialog();
-            file.Filter = $"{filter} |*.{filter}";
-            file.AddExtension = true;
-            file.Title = "Open file";
+            var file = new OpenFileDialog
+            {
+                Filter = $"{filter} |*.{filter}",
+                AddExtension = true,
+                Title = "Open file"
+            };
             return file;
         }
 
@@ -80,7 +83,6 @@ namespace GraphicEditor
             figures.Add(5, new Triangle(new Point(x1, y1), new Point(x2, y2), color, SliderThickness.Value));
             figures.Add(6, new RightTriangle(new Point(x1, y1), new Point(x2, y2), color, SliderThickness.Value));
         }
-
 
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -101,47 +103,45 @@ namespace GraphicEditor
 
         private void UndoPicture_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (CanvasMain.Children.Count != 0)
-            {
-                deleteFigure.Add(CanvasMain.Children[CanvasMain.Children.Count - 1]);
-                deleteFiguresForSerialezer.Add(shape.Figures[CanvasMain.Children.Count - 1]);
-                shape.Figures.RemoveAt(CanvasMain.Children.Count - 1);
-                CanvasMain.Children.RemoveAt(CanvasMain.Children.Count - 1);
-            }
+            if (CanvasMain.Children.Count == 0) return;
+
+            deleteFigure.Add(CanvasMain.Children[CanvasMain.Children.Count - 1]);
+            deleteFiguresForSerialezer.Add(shape.Figures[CanvasMain.Children.Count - 1]);
+            shape.Figures.RemoveAt(CanvasMain.Children.Count - 1);
+            CanvasMain.Children.RemoveAt(CanvasMain.Children.Count - 1);
         }
 
         private void RedoPicture_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (deleteFigure.Count != 0)
-            {
-                CanvasMain.Children.Add(deleteFigure[deleteFigure.Count - 1]);
-                shape.Figures.Add(deleteFiguresForSerialezer[deleteFigure.Count - 1]);
-                deleteFigure.RemoveAt(deleteFigure.Count - 1);
-                deleteFiguresForSerialezer.RemoveAt(deleteFiguresForSerialezer.Count - 1);
-            }
+            if (deleteFigure.Count == 0) return;
+
+            CanvasMain.Children.Add(deleteFigure[deleteFigure.Count - 1]);
+            shape.Figures.Add(deleteFiguresForSerialezer[deleteFigure.Count - 1]);
+            deleteFigure.RemoveAt(deleteFigure.Count - 1);
+            deleteFiguresForSerialezer.RemoveAt(deleteFiguresForSerialezer.Count - 1);
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             LabelX.Content = "X = " + e.GetPosition(CanvasMain).X;
             LabelY.Content = "Y = " + e.GetPosition(CanvasMain).Y;
-            if (draw && (e.LeftButton == MouseButtonState.Pressed))
-            {
-                Point point = e.GetPosition(CanvasMain);
-                x2 = point.X;
-                y2 = point.Y;
-                ChangingObjects();
-                if (oneFigure)
-                {
-                    CanvasMain.Children.RemoveAt(CanvasMain.Children.Count - 1);
-                    shape.Figures.RemoveAt(shape.Figures.Count - 1);
-                }
-                figures[tag].Draw(CanvasMain);
-                shape.Figures.Add(figures[tag]);
-                oneFigure = true;
+            if (!draw || (e.LeftButton != MouseButtonState.Pressed)) return;
 
-                figures.Clear();
+            Point point = e.GetPosition(CanvasMain);
+            x2 = point.X;
+            y2 = point.Y;
+            ChangingObjects();
+            if (oneFigure)
+            {
+                CanvasMain.Children.RemoveAt(CanvasMain.Children.Count - 1);
+                shape.Figures.RemoveAt(shape.Figures.Count - 1);
             }
+
+            figures[tag].Draw(CanvasMain);
+            shape.Figures.Add(figures[tag]);
+            oneFigure = true;
+
+            figures.Clear();
         }
 
         private void ColorBorder_MouseDown(object sender, MouseButtonEventArgs e)
@@ -157,51 +157,53 @@ namespace GraphicEditor
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             var serializationWindow = new SerializationWindow();
-            if (serializationWindow.ShowDialog() == true)
-            {
-                SaveFileDialog saveFile = InitializeSaveFile(serializationWindow.TypeSerialization.ToLower());
-                if (saveFile.ShowDialog(this) == true)
-                {
-                    if (serializationWindow.TypeSerialization == "Jpeg")
-                    {
-                        if (saveFile.FileName != nameOpenOnceJpeg)
-                        {
-                            SaveOpenJpegFile<IJpegFile>(true, saveFile, null);
-                            nameOpenOnceJpeg = null;
-                        }
-                        else MessageBox.Show("Can't save to open file.");
+            if (serializationWindow.ShowDialog() != true) return;
 
-                    }
-                    else if (serializationWindow.TypeSerialization == "Txt")
-                    {
-                        MessageBox.Show(SaveTXT(saveFile, shape));
-                        
-                    }
-                    else
-                        SaveOpenFile<ISerializer>(serializationWindow.TypeSerialization, true, saveFile, null, shape);
+            SaveFileDialog saveFile = InitializeSaveFile(serializationWindow.TypeSerialization.ToLower());
+            
+            if (saveFile.ShowDialog(this) != true) return;
+
+            if (serializationWindow.TypeSerialization == "Jpeg")
+            {
+                if (saveFile.FileName != nameOpenOnceJpeg)
+                {
+                    SaveOpenJpegFile<IJpegFile>(true, saveFile, null);
+                    nameOpenOnceJpeg = null;
                 }
+                else MessageBox.Show("Can't save to open file.");
             }
+            else if (serializationWindow.TypeSerialization == "Txt")
+            {
+                MessageBox.Show(SaveTXT(saveFile, shape));
+            }
+            else
+                SaveOpenFile<ISerializer>(serializationWindow.TypeSerialization, true, saveFile, null, shape);
         }
 
-        private Shape SaveOpenFile<T>(string someType, bool choice, SaveFileDialog saveFile, OpenFileDialog openFile, Shape shape) where  T : ISerializer
+        private Shape SaveOpenFile<T>(string someType, bool choice, SaveFileDialog saveFile, OpenFileDialog openFile,
+            Shape shape) where T : ISerializer
         {
-            
             string serializerLibName = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
                 "CreateSerializerLibrary.dll");
-            if (!File.Exists(serializerLibName)) { MessageBox.Show("File not found"); return null; }
+
+            if (!File.Exists(serializerLibName))
+            {
+                MessageBox.Show("File not found");
+                return null;
+            }
 
             try
             {
-                Assembly serializerAssembly = Assembly.LoadFrom(serializerLibName);
+                var serializerAssembly = Assembly.LoadFrom(serializerLibName);
                 foreach (Type type in serializerAssembly.GetExportedTypes())
                 {
                     if (type.IsClass && typeof(T).IsAssignableFrom(type) && (type.Name == someType))
                     {
-                        var serializer = (T)Activator.CreateInstance(type);
+                        var serializer = (T) Activator.CreateInstance(type);
                         if (choice)
                             MessageBox.Show(serializer.Serialize(saveFile, shape));
                         else
-                            return serializer.Deserialize<Shape>(openFile,someType);
+                            return serializer.Deserialize<Shape>(openFile, someType);
                         return null;
                     }
                 }
@@ -210,42 +212,47 @@ namespace GraphicEditor
             {
                 MessageBox.Show("Well, I managed to upload a file.");
             }
-            
+
 
             MessageBox.Show("The file does not contain the necessary data");
             return null;
         }
 
-        private void SaveOpenJpegFile<T>(bool choice, SaveFileDialog saveFile, OpenFileDialog openFile) where T : IJpegFile
+        private void SaveOpenJpegFile<T>(bool choice, SaveFileDialog saveFile, OpenFileDialog openFile)
+            where T : IJpegFile
         {
             string serializerLibName = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
                 "CreateSerializerLibrary.dll");
-            if (!File.Exists(serializerLibName)) { MessageBox.Show("File not found"); return; }
 
-            Assembly serializerAssembly = Assembly.LoadFrom(serializerLibName);
+            if (!File.Exists(serializerLibName))
+            {
+                MessageBox.Show("File not found");
+                return;
+            }
+
+            var serializerAssembly = Assembly.LoadFrom(serializerLibName);
             foreach (Type type in serializerAssembly.GetExportedTypes())
             {
                 if (type.IsClass && typeof(T).IsAssignableFrom(type) && (type.Name == "Jpeg"))
                 {
-                    var serializer = (T)Activator.CreateInstance(type);
+                    var serializer = (T) Activator.CreateInstance(type);
                     try
                     {
                         if (choice)
                             MessageBox.Show(serializer.Serialize(saveFile, CanvasMain));
                         else
-                            serializer.Deserialize<Canvas>(openFile, CanvasMain);
+                            serializer.Deserialize(openFile, CanvasMain);
                         return;
                     }
                     catch (Exception e)
                     {
                         MessageBox.Show(e.Message);
-
-                    }                
+                    }
                 }
             }
+
             MessageBox.Show("The file does not contain the necessary data");
         }
-
 
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
@@ -255,32 +262,32 @@ namespace GraphicEditor
             {
                 CanvasMain.Children.Clear();
                 OpenFileDialog openFile = InitializeOpenFile("zip");
-                if (openFile.ShowDialog(this) == true)
-                {
-                    try
-                    {
-                        if (serializationWindow.TypeSerialization == "Jpeg")
-                        {
-                            SaveOpenJpegFile<IJpegFile>(false,null,openFile);
-                            nameOpenOnceJpeg = openFile.FileName;
-                        }
-                        else if (serializationWindow.TypeSerialization == "Txt")
-                        {
-                            shape = OpenTXT(openFile, serializationWindow.TypeSerialization);
-                        }
-                        else
-                            shape = SaveOpenFile<ISerializer>(serializationWindow.TypeSerialization, false, null, openFile, null);
+                if (openFile.ShowDialog(this) != true) return;
 
-                        if (serializationWindow.TypeSerialization != "Jpeg")
-                        {
-                            Parser(shape);
-                            tag = 0;
-                        }
-                    }
-                    catch (Exception)
+                try
+                {
+                    if (serializationWindow.TypeSerialization == "Jpeg")
                     {
-                        shape = new Shape() { Figures = new List<Figure>() };
+                        SaveOpenJpegFile<IJpegFile>(false, null, openFile);
+                        nameOpenOnceJpeg = openFile.FileName;
                     }
+                    else if (serializationWindow.TypeSerialization == "Txt")
+                    {
+                        shape = OpenTXT(openFile, serializationWindow.TypeSerialization);
+                    }
+                    else
+                        shape = SaveOpenFile<ISerializer>(serializationWindow.TypeSerialization, false, null,
+                            openFile, null);
+
+                    if (serializationWindow.TypeSerialization != "Jpeg")
+                    {
+                        Parser(shape);
+                        tag = 0;
+                    }
+                }
+                catch (Exception)
+                {
+                    shape = new Shape() {Figures = new List<Figure>()};
                 }
             }
             else
@@ -289,10 +296,7 @@ namespace GraphicEditor
             }
         }
 
-        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            draw = false;
-        }
+        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e) => draw = false;
 
         private void Picture_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -302,13 +306,15 @@ namespace GraphicEditor
 
         private void Parser(Shape shape)
         {
-            if (shape?.Figures != null)
-                foreach (var figure in shape.Figures)
-                {
-                    figure.SetColor();
-                    figure.Draw(CanvasMain);
-                }
+            if (shape?.Figures == null) return;
+
+            foreach (var figure in shape.Figures)
+            {
+                figure.SetColor();
+                figure.Draw(CanvasMain);
+            }
         }
+
         private string SaveTXT(SaveFileDialog saveFile, Shape shape)
         {
             using (var sw = new StreamWriter(saveFile.FileName, false, Encoding.Default))
@@ -316,10 +322,12 @@ namespace GraphicEditor
                 if (shape?.Figures != null)
                     foreach (var figure in shape.Figures)
                     {
-                        sw.WriteLine($"{figure.GetType().Name} {figure.firstPoint.X} {figure.firstPoint.Y} {figure.secondPoint.X}" +
-                                     $" {figure.secondPoint.Y} {figure.serializedColor} {figure.thickness}");
+                        sw.WriteLine(
+                            $"{figure.GetType().Name} {figure.firstPoint.X} {figure.firstPoint.Y} {figure.secondPoint.X}" +
+                            $" {figure.secondPoint.Y} {figure.serializedColor} {figure.thickness}");
                     }
             }
+
             string zipFileName = Regex.Replace(saveFile.FileName, "txt", "zip");
             using (var fs = new FileStream(zipFileName, FileMode.Create))
             using (var archive = new ZipArchive(fs, ZipArchiveMode.Create))
@@ -328,22 +336,21 @@ namespace GraphicEditor
                 return "File saved, " + saveFile.FileName;
             }
         }
+
         private Shape OpenTXT(OpenFileDialog archive, string filter)
         {
-            var shape = new Shape() { Figures = new List<Figure>() };
+            var shape = new Shape() {Figures = new List<Figure>()};
             try
             {
-                using (ZipArchive zip = ZipFile.Open(archive.FileName, ZipArchiveMode.Read))
-                {
+                using (var zip = ZipFile.Open(archive.FileName, ZipArchiveMode.Read))
                     foreach (ZipArchiveEntry entry in zip.Entries)
                         if (entry.FullName.EndsWith($".{filter}", StringComparison.OrdinalIgnoreCase))
                         {
-                            string path = archive.FileName;
+                            var path = archive.FileName;
                             path = (path.Replace(archive.SafeFileName, ""));
                             path = path.Remove(path.Length - 1, 1) + $"\\{entry.Name}";
                             entry.ExtractToFile(path);
                         }
-                }
             }
             catch (Exception ex)
             {
@@ -354,29 +361,27 @@ namespace GraphicEditor
                 OpenFileDialog openFile = InitializeOpenFile(filter.ToLower());
                 if (openFile.ShowDialog(this) == true)
                 {
-                    
                     using (var fs = new FileStream(openFile.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var sr = new StreamReader(fs, Encoding.Default))
                     {
-                        using (var sr = new StreamReader(fs, Encoding.Default))
-                        {
-                            string line;
-                            while ((line = sr.ReadLine()) != null)
-                            {
-                                shape.Figures.Add(ParserTXT(line));
-                            }
-                        }
+                        string line;
+                        while ((line = sr.ReadLine()) != null)
+                            shape.Figures.Add(ParserTXT(line));
                     }
-                    
                 }
             }
 
             return shape;
         }
 
-        private Figure[] InitializeArrayFigure() => new Figure[] { new Line(), new Circle(), new Ellipse(), new Rectangle(), new Square(), new Triangle(), new RightTriangle() };
+        private Figure[] InitializeArrayFigure() => new Figure[]
+        {
+            new Line(), new Circle(), new Ellipse(), new Rectangle(), new Square(), new Triangle(), new RightTriangle()
+        };
+
         private Figure ParserTXT(string line)
         {
-            string[] data = line.Split(new char[] { ' ' });
+            string[] data = line.Split(' ');
             figuresType = InitializeArrayFigure();
             byte tag = FindTypeFigure(data[0]);
             var elem = figuresType[tag];
@@ -388,6 +393,7 @@ namespace GraphicEditor
             elem.serializedColor = ToColor(data[5]);
             return elem;
         }
+
         private byte FindTypeFigure(string type)
         {
             byte i = 0;
@@ -401,10 +407,10 @@ namespace GraphicEditor
         {
             colorLine = colorLine.Remove(0, 1);
             var color = new Color();
-            color.A = Convert.ToByte(new String(new char[] { colorLine[0], colorLine[1] }), 16);
-            color.R = Convert.ToByte(new String(new char[] { colorLine[2], colorLine[3] }), 16);
-            color.G = Convert.ToByte(new String(new char[] { colorLine[4], colorLine[5] }), 16);
-            color.B = Convert.ToByte(new String(new char[] { colorLine[6], colorLine[7] }), 16);
+            color.A = Convert.ToByte(new String(new char[] {colorLine[0], colorLine[1]}), 16);
+            color.R = Convert.ToByte(new String(new char[] {colorLine[2], colorLine[3]}), 16);
+            color.G = Convert.ToByte(new String(new char[] {colorLine[4], colorLine[5]}), 16);
+            color.B = Convert.ToByte(new String(new char[] {colorLine[6], colorLine[7]}), 16);
             return color;
         }
     }
