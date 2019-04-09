@@ -27,7 +27,7 @@ namespace GraphicEditor.Shapes
 
         public override void Draw(Canvas canvas)
         {
-            System.Windows.Shapes.Rectangle rectangle = new System.Windows.Shapes.Rectangle()
+            var rectangle = new System.Windows.Shapes.Rectangle()
             {
                 Height = height,
                 Width = width,

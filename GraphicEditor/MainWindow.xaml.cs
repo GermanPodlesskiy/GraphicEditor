@@ -27,11 +27,6 @@ namespace GraphicEditor
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     [Serializable]
-    public class Shape
-    {
-        public List<Figure> Figures { get; set; }
-    }
-
     public partial class MainWindow : Window
     {
         private double x1, x2, y1, y2;
@@ -45,6 +40,7 @@ namespace GraphicEditor
         private Shape shape = new Shape() {Figures = new List<Figure>()};
         private Figure[] figuresType;
         private string nameOpenOnceJpeg;
+        private bool resize;
 
         public MainWindow()
         {
@@ -160,7 +156,7 @@ namespace GraphicEditor
             if (serializationWindow.ShowDialog() != true) return;
 
             SaveFileDialog saveFile = InitializeSaveFile(serializationWindow.TypeSerialization.ToLower());
-            
+
             if (saveFile.ShowDialog(this) != true) return;
 
             if (serializationWindow.TypeSerialization == "Jpeg")
@@ -406,11 +402,13 @@ namespace GraphicEditor
         private Color ToColor(string colorLine)
         {
             colorLine = colorLine.Remove(0, 1);
-            var color = new Color();
-            color.A = Convert.ToByte(new String(new char[] {colorLine[0], colorLine[1]}), 16);
-            color.R = Convert.ToByte(new String(new char[] {colorLine[2], colorLine[3]}), 16);
-            color.G = Convert.ToByte(new String(new char[] {colorLine[4], colorLine[5]}), 16);
-            color.B = Convert.ToByte(new String(new char[] {colorLine[6], colorLine[7]}), 16);
+            var color = new Color
+            {
+                A = Convert.ToByte(new String(new char[] {colorLine[0], colorLine[1]}), 16),
+                R = Convert.ToByte(new String(new char[] {colorLine[2], colorLine[3]}), 16),
+                G = Convert.ToByte(new String(new char[] {colorLine[4], colorLine[5]}), 16),
+                B = Convert.ToByte(new String(new char[] {colorLine[6], colorLine[7]}), 16)
+            };
             return color;
         }
     }

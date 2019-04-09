@@ -94,6 +94,7 @@
     </Compile>
     <Compile Include="Shapes\Circle.cs" />
     <Compile Include="Shapes\RightTriangle.cs" />
+    <Compile Include="Shapes\Shape.cs" />
     <Compile Include="Shapes\Square.cs" />
     <Compile Include="Shapes\Ellipse.cs" />
     <Compile Include="Shapes\Figure.cs" />
