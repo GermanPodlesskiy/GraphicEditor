@@ -35,7 +35,7 @@ namespace OpenSaveFile
             return file;
         }
 
-        public static void Unarchive(OpenFileDialog archive, string filter)
+        public static void UnArchive(OpenFileDialog archive, string filter)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace OpenSaveFile
     {
         public T Deserialize<T>(OpenFileDialog archive, string filter) where T : class
         {
-            Archive.Unarchive(archive, filter);
+            Archive.UnArchive(archive, filter);
             OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
             if (openFile.ShowDialog() != true) return null;
 
@@ -88,7 +88,7 @@ namespace OpenSaveFile
     {
         public T Deserialize<T>(OpenFileDialog archive, string filter) where T : class
         {
-            Archive.Unarchive(archive, filter);
+            Archive.UnArchive(archive, filter);
             OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
             if (openFile.ShowDialog() != true) return null;
 
@@ -115,7 +115,7 @@ namespace OpenSaveFile
     {
         public T Deserialize<T>(OpenFileDialog archive, string filter) where T : class
         {
-            Archive.Unarchive(archive, filter);
+            Archive.UnArchive(archive, filter);
             OpenFileDialog openFile = Archive.InitializeOpenFile(filter.ToLower());
             if (openFile.ShowDialog() != true) return null;
 
@@ -142,7 +142,7 @@ namespace OpenSaveFile
     {
         public void Deserialize<T>(OpenFileDialog archive, T obj) where T : Panel
         {
-            Archive.Unarchive(archive, "Jpeg");
+            Archive.UnArchive(archive, "Jpeg");
             OpenFileDialog openFile = Archive.InitializeOpenFile("jpeg");
             if (openFile.ShowDialog() == true)
             {

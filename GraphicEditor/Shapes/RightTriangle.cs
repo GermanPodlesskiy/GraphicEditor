@@ -8,8 +8,8 @@ namespace GraphicEditor.Shapes
     [Serializable]
     public class RightTriangle : Triangle
     {
-        private PointCollection points = new PointCollection();
-        private Point left, up, right;
+        [NonSerialized] private PointCollection points = new PointCollection();
+        [NonSerialized] private Point left, up, right;
 
         public RightTriangle() { }
 

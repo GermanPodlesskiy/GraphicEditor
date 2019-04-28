@@ -9,7 +9,6 @@ namespace GraphicEditor.Shapes
     public class Ellipse : Figure
     {
         protected int width, height;
-        protected DrawingEllipse drEl;
 
         public Ellipse() { }
 
@@ -27,56 +26,32 @@ namespace GraphicEditor.Shapes
 
         public override void Draw(Canvas canvas)
         {
-            drEl = new DrawingEllipse
-            {
-                FirstPoint = firstPoint,
-                SecondPoint = secondPoint,
-                Color = color,
-                Height = height,
-                Width = width,
-                Thickness = thickness,
-            };
-            drEl.Draw(canvas);
-        }
-    }
-
-    public class DrawingEllipse
-    {
-        public Point FirstPoint { get; set; }
-        public Point SecondPoint { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public Brush Color { get; set; }
-        public double Thickness { get; set; }
-
-        public void Draw(Canvas canvas)
-        {
             var ellipse = new System.Windows.Shapes.Ellipse()
             {
-                Height = Height,
-                Width = Width,
-                Stroke = Color,
-                StrokeThickness = Thickness
+                Height = height,
+                Width = width,
+                Stroke = color,
+                StrokeThickness = thickness
             };
 
-            (double item1, double item2) = StartPoint();
-            Canvas.SetLeft(ellipse, item1);
-            Canvas.SetTop(ellipse, item2);
+            (double x, double y) = StartPoint();
+            Canvas.SetLeft(ellipse, x);
+            Canvas.SetTop(ellipse, y);
             canvas.Children.Add(ellipse);
         }
 
         private (double, double) StartPoint()
         {
-            if ((FirstPoint.X < SecondPoint.X) && (FirstPoint.Y < SecondPoint.Y))
-                return (FirstPoint.X, SecondPoint.Y);
+            if ((firstPoint.X < secondPoint.X) && (firstPoint.Y < secondPoint.Y))
+                return (firstPoint.X, firstPoint.Y);
 
-            if ((FirstPoint.X < SecondPoint.X) && (FirstPoint.Y > SecondPoint.Y))
-                return (FirstPoint.X, SecondPoint.Y);
+            if ((firstPoint.X < secondPoint.X) && (firstPoint.Y > secondPoint.Y))
+                return (firstPoint.X, secondPoint.Y);
 
-            if ((FirstPoint.X > SecondPoint.X) && (FirstPoint.Y > SecondPoint.Y))
-                return (SecondPoint.X, SecondPoint.Y);
+            if ((firstPoint.X > secondPoint.X) && (firstPoint.Y > secondPoint.Y))
+                return (secondPoint.X, secondPoint.Y);
 
-            return (SecondPoint.X, FirstPoint.Y);
+            return (secondPoint.X, firstPoint.Y);
         }
     }
 }

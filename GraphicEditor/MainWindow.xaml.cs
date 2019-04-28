@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using GraphicEditor.Client;
 using GraphicEditor.Shapes;
 using SerializerInterface;
 using Ellipse = GraphicEditor.Shapes.Ellipse;
@@ -26,7 +31,6 @@ namespace GraphicEditor
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    [Serializable]
     public partial class MainWindow : Window
     {
         private double x1, x2, y1, y2;
@@ -35,12 +39,13 @@ namespace GraphicEditor
         private List<Figure> deleteFiguresForSerialezer = new List<Figure>();
         private Dictionary<int, Figure> figures = new Dictionary<int, Figure>();
         private Brush color = Brushes.Blue;
-        private bool draw;
-        private bool oneFigure;
-        private Shape shape = new Shape() {Figures = new List<Figure>()};
+        private bool isDraw;
+        private bool isOneFigure;
+        private Shape shape = new Shape {Figures = new List<Figure>()};
         private Figure[] figuresType;
         private string nameOpenOnceJpeg;
-        private bool resize;
+        private UdpClient client;
+        public Point LastPoint { get; set; }
 
         public MainWindow()
         {
@@ -86,8 +91,9 @@ namespace GraphicEditor
             Point point = e.GetPosition(CanvasMain);
             x1 = point.X;
             y1 = point.Y;
-            draw = true;
-            oneFigure = false;
+            isDraw = true;
+            isOneFigure = false;
+            UdpHelper.SendBeginPaint(client, isOneFigure);
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
@@ -121,23 +127,54 @@ namespace GraphicEditor
         {
             LabelX.Content = "X = " + e.GetPosition(CanvasMain).X;
             LabelY.Content = "Y = " + e.GetPosition(CanvasMain).Y;
-            if (!draw || (e.LeftButton != MouseButtonState.Pressed)) return;
+            if (!isDraw || (e.LeftButton != MouseButtonState.Pressed)) return;
 
             Point point = e.GetPosition(CanvasMain);
             x2 = point.X;
             y2 = point.Y;
             ChangingObjects();
-            if (oneFigure)
-            {
-                CanvasMain.Children.RemoveAt(CanvasMain.Children.Count - 1);
-                shape.Figures.RemoveAt(shape.Figures.Count - 1);
-            }
 
-            figures[tag].Draw(CanvasMain);
-            shape.Figures.Add(figures[tag]);
-            oneFigure = true;
+            if(client == null)
+                PrintFigure(figures[tag]);
+            else
+                UdpHelper.SendFigure(figures[tag], client, true);
 
             figures.Clear();
+        }
+
+        void ReceiveMessagePoint()
+        {
+            while (true)
+            {
+                IPEndPoint remoteIp = null;
+                byte[] data = client.Receive(ref remoteIp);
+                var package = new Converter<PackageForSending>().ConvertToObject(data);
+                switch (package.Command)
+                {
+                    case Commands.Point:
+                        var figure = new Converter<Figure>().ConvertToObject(package.Data);
+                        PrintFigure(figure);
+                        break;
+                    //case Commands.BeginPaint:
+                }
+                isOneFigure = package.IsOneFigure;
+            }
+        }
+
+        public void PrintFigure(Figure figure)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (isOneFigure)
+                {
+                    CanvasMain.Children.RemoveAt(CanvasMain.Children.Count - 1);
+                    shape.Figures.RemoveAt(shape.Figures.Count - 1);
+                }
+                shape.Figures.Add(figure);
+                figure.SetColor();
+                figure.Draw(CanvasMain);
+                isOneFigure = true;
+            });
         }
 
         private void ColorBorder_MouseDown(object sender, MouseButtonEventArgs e)
@@ -204,7 +241,7 @@ namespace GraphicEditor
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show("Well, I managed to upload a file.");
             }
@@ -292,7 +329,7 @@ namespace GraphicEditor
             }
         }
 
-        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e) => draw = false;
+        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e) => isDraw = false;
 
         private void Picture_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -374,6 +411,19 @@ namespace GraphicEditor
         {
             new Line(), new Circle(), new Ellipse(), new Rectangle(), new Square(), new Triangle(), new RightTriangle()
         };
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                client = new UdpClient(UdpHelper.GetFreePort());
+                client.JoinMulticastGroup(IPAddress.Parse(ConectInfo.GroupAddr));
+                Task.Factory.StartNew(ReceiveMessagePoint);
+            }
+            catch
+            {
+            }
+        }
 
         private Figure ParserTXT(string line)
         {
