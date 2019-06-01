@@ -36,7 +36,7 @@ namespace GraphicEditor
         private double _x1, _x2, _y1, _y2;
         private ushort _tag;
         private readonly List<UIElement> _deleteFigure = new List<UIElement>();
-        private readonly List<Figure> _deleteFiguresForSerialezer = new List<Figure>();
+        private readonly List<Figure> _deleteFiguresForSerializer = new List<Figure>();
         private readonly Dictionary<int, Figure> _figures = new Dictionary<int, Figure>();
         private Brush _color = Brushes.Blue;
         private bool _isDraw, _isOneFigure, _isMove;
@@ -49,7 +49,7 @@ namespace GraphicEditor
         private Figure _figure;
         private System.Windows.Shapes.Shape _chousenShape;
         private Point _oldPointFirst, _oldPointSecond;
-        private string _userName;
+        private static string _userName;
 
 
         public MainWindow()
@@ -106,7 +106,7 @@ namespace GraphicEditor
             {
                 if (!_isMove)
                 {
-                    UdpHelper.SendBeginPaint(_client, _isOneFigure);
+                    UdpHelper.SendFigure(Command.BeginPaint, new Line(), _client, _isOneFigure);
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace GraphicEditor
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             CanvasMain.Children.Clear();
-            _deleteFiguresForSerialezer.Clear();
+            _deleteFiguresForSerializer.Clear();
             _deleteFigure.Clear();
         }
 
@@ -126,7 +126,7 @@ namespace GraphicEditor
             }
 
             _deleteFigure.Add(CanvasMain.Children[CanvasMain.Children.Count - 1]);
-            _deleteFiguresForSerialezer.Add(_shape.Figures[CanvasMain.Children.Count - 1]);
+            _deleteFiguresForSerializer.Add(_shape.Figures[CanvasMain.Children.Count - 1]);
             _shape.Figures.RemoveAt(CanvasMain.Children.Count - 1);
             CanvasMain.Children.RemoveAt(CanvasMain.Children.Count - 1);
         }
@@ -140,9 +140,9 @@ namespace GraphicEditor
             }
 
             CanvasMain.Children.Add(_deleteFigure[_deleteFigure.Count - 1]);
-            _shape.Figures.Add(_deleteFiguresForSerialezer[_deleteFigure.Count - 1]);
+            _shape.Figures.Add(_deleteFiguresForSerializer[_deleteFigure.Count - 1]);
             _deleteFigure.RemoveAt(_deleteFigure.Count - 1);
-            _deleteFiguresForSerialezer.RemoveAt(_deleteFiguresForSerialezer.Count - 1);
+            _deleteFiguresForSerializer.RemoveAt(_deleteFiguresForSerializer.Count - 1);
         }
 
         private void OnMouseUpFigure(object s, EventArgs f)
@@ -162,14 +162,10 @@ namespace GraphicEditor
                 ChangingObjects();
 
                 PrintFigure(_figures[_tag]);
-                CanvasMain.Children[CanvasMain.Children.Count - 1].MouseDown += OnMouseDownFigure;
-                CanvasMain.Children[CanvasMain.Children.Count - 1].MouseUp += OnMouseUpFigure;
-
                 if (_isConnected)
                 {
-                    UdpHelper.SendFigure(_figures[_tag], _client, _isOneFigure);
+                    UdpHelper.SendFigure(Command.Point, _figures[_tag], _client, _isOneFigure);
                 }
-
 
                 _figures.Clear();
             }
@@ -179,6 +175,12 @@ namespace GraphicEditor
                 _figure.SecondPoint.X = _oldPointSecond.X + (point.X - _x1);
                 _figure.FirstPoint.Y = _oldPointFirst.Y + (point.Y - _y1);
                 _figure.SecondPoint.Y = _oldPointSecond.Y + (point.Y - _y1);
+
+                if (_isConnected)
+                {
+                    UdpHelper.SendFigure(Command.Move, _figure, _client, _isOneFigure);
+                }
+
                 if (_isOneFigure)
                 {
                     CanvasMain.Children.Remove(_chousenShape);
@@ -191,9 +193,9 @@ namespace GraphicEditor
                 _isOneFigure = false;
                 _figure.SetColor();
                 _figure.Draw(CanvasMain);
-
-                CanvasMain.Children[CanvasMain.Children.Count - 1].MouseDown += OnMouseDownFigure;
-                CanvasMain.Children[CanvasMain.Children.Count - 1].MouseUp += OnMouseUpFigure;
+                _figure.Tag = CanvasMain.Children.IndexOf(CanvasMain.Children[CanvasMain.Children.Count - 1]);
+                _shape.Figures.Add(_figure);
+                SetEventOnLastFigure();
             }
         }
 
@@ -207,18 +209,43 @@ namespace GraphicEditor
                 _isOneFigure = package.IsOneFigure;
                 switch (package.Command)
                 {
-                    case Commands.BeginPaint:
-                    case Commands.Point:
-                        var figure = new Converter<Figure>().ConvertToObject(package.Data);
-                        PrintFigure(figure);
-
+                    case Command.BeginPaint:
+                    case Command.Point:
+                        PrintFigure(new Converter<Figure>().ConvertToObject(package.Data));
                         break;
-
-                    case Commands.Message:
+                    case Command.Message:
                         ReceiveMessage(Encoding.Default.GetString(package.Data));
+                        break;
+                    case Command.Move:
+                        ReceiveMoveFigure(new Converter<Figure>().ConvertToObject(package.Data));
                         break;
                 }
             }
+        }
+
+        private void ReceiveMoveFigure(Figure figure)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (CanvasMain.Children.Count <= figure.Tag)
+                {
+                    return;
+                }
+
+                if (_isOneFigure)
+                {
+                    CanvasMain.Children.RemoveAt(figure.Tag);
+                }
+                else
+                {
+                    CanvasMain.Children.RemoveAt(CanvasMain.Children.Count - 1);
+                }
+
+                figure.SetColor();
+                figure.Draw(CanvasMain);
+                _shape.Figures.Add(figure);
+                SetEventOnLastFigure();
+            });
         }
 
         private void PrintFigure(Figure figure)
@@ -235,7 +262,14 @@ namespace GraphicEditor
                 figure.SetColor();
                 figure.Draw(CanvasMain);
                 _isOneFigure = true;
+                SetEventOnLastFigure();
             });
+        }
+
+        private void SetEventOnLastFigure()
+        {
+            CanvasMain.Children[CanvasMain.Children.Count - 1].MouseDown += OnMouseDownFigure;
+            CanvasMain.Children[CanvasMain.Children.Count - 1].MouseUp += OnMouseUpFigure;
         }
 
         private void ColorBorder_MouseDown(object sender, MouseButtonEventArgs e)
@@ -288,7 +322,8 @@ namespace GraphicEditor
         private Shape SaveOpenFile<T>(string someType, bool choice, SaveFileDialog saveFile, OpenFileDialog openFile,
             Shape shape) where T : ISerializer
         {
-            string serializerLibName = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+            var serializerLibName = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) ?? throw new InvalidOperationException(),
                 "CreateSerializerLibrary.dll");
 
             if (!File.Exists(serializerLibName))
@@ -331,7 +366,8 @@ namespace GraphicEditor
         private void SaveOpenJpegFile<T>(bool choice, SaveFileDialog saveFile, OpenFileDialog openFile)
             where T : IJpegFile
         {
-            string serializerLibName = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+            var serializerLibName = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) ?? throw new InvalidOperationException(),
                 "CreateSerializerLibrary.dll");
 
             if (!File.Exists(serializerLibName))
@@ -526,16 +562,16 @@ namespace GraphicEditor
             _chousenShape = (System.Windows.Shapes.Shape) sender;
 
 
-            if (_shape.Figures.Count(x => x.Tag == _chousenShape.GetHashCode()) == 0)
+            if (_shape.Figures.All(x => x.Tag != _chousenShape.GetHashCode()))
             {
                 return;
             }
 
             _figure = _shape.Figures.First(x => x.Tag == _chousenShape.GetHashCode());
-            _isMove = true;
+            _figure.Tag = CanvasMain.Children.IndexOf(_chousenShape);
+            _isMove = _isOneFigure = true;
             _oldPointFirst = _figure.FirstPoint;
             _oldPointSecond = _figure.SecondPoint;
-            _isOneFigure = true;
             _x1 = p.X;
             _y1 = p.Y;
         }
@@ -559,7 +595,7 @@ namespace GraphicEditor
             }
 
             _userName = TextBoxUsername.Text;
-            SendMessage(_userName + " joined");
+            SendMessage(_userName + " joined.");
 
             GridMain.Visibility = Visibility.Visible;
             GridRegister.Visibility = Visibility.Hidden;
@@ -601,6 +637,7 @@ namespace GraphicEditor
 
         private static void Disconnect()
         {
+            SendMessage(_userName + " leave");
             _client.DropMulticastGroup(IPAddress.Parse(ConectInfo.GroupAddr));
         }
 
@@ -625,6 +662,14 @@ namespace GraphicEditor
             UdpHelper.SendMessage(_client, message);
         }
 
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if (_isConnected)
+            {
+                Disconnect();
+            }
+        }
+
         private void Connect(object sender, RoutedEventArgs e)
         {
             GridMain.Visibility = Visibility.Hidden;
@@ -638,7 +683,6 @@ namespace GraphicEditor
                 return;
             }
 
-            SendMessage(_userName + " leave");
             Disconnect();
             _isConnected = false;
             var width = GridChat.Width;

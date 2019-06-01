@@ -1,10 +1,9 @@
-﻿namespace GraphicEditor
+﻿namespace GraphicEditor.Client
 {
-    public enum Commands
+    public enum Command
     {
         Point,
         BeginPaint,
-        Delete,
         Move,
         Message
     }

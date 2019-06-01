@@ -32,7 +32,7 @@ namespace GraphicEditor.Shapes
         [DataMember] [NonSerialized] public Color SerializedColor;
         [XmlIgnore] public byte A, G, R, B;
         [NonSerialized] [XmlIgnore] protected Brush Color;
-        [NonSerialized] [XmlIgnore] public int Tag;
+        [XmlIgnore] public int Tag;
 
         protected Figure()
         {

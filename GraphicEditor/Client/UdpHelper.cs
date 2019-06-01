@@ -4,10 +4,9 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
-using GraphicEditor.Client;
 using GraphicEditor.Shapes;
 
-namespace GraphicEditor
+namespace GraphicEditor.Client
 {
     static class UdpHelper
     {
@@ -20,28 +19,22 @@ namespace GraphicEditor
             }
         }
 
-        public static void SendBeginPaint(UdpClient client, bool isOneFigure)
+        public static void SendFigure(Command command, Figure figure, UdpClient client, bool isOneFigure)
         {
-            var data = GetPointDataForSending(Commands.BeginPaint, new Line(), isOneFigure);
-            Send(data, client);
-        }
-
-        public static void SendFigure(Figure figure, UdpClient client, bool isOneFigure)
-        {
-            byte[] data = GetPointDataForSending(Commands.Point, figure, isOneFigure);
+            var data = GetPointDataForSending(command, figure, isOneFigure);
             Send(data, client);
         }
 
         public static void SendMessage(UdpClient client, string message)
         {
-            byte[] data = GetDataForSending(Commands.Message, Encoding.Default.GetBytes(message), true);
+            var data = GetDataForSending(Command.Message, Encoding.Default.GetBytes(message), true);
             Send(data, client);
         }
 
-        public static byte[] GetPointDataForSending(Commands command, Figure figure, bool isOneFigure)
+        public static byte[] GetPointDataForSending(Command command, Figure figure, bool isOneFigure)
         {
-            var serialazideData = new Converter<Figure>().ConvertToBytes(figure);
-            return GetDataForSending(command, serialazideData, isOneFigure);
+            var data = new Converter<Figure>().ConvertToBytes(figure);
+            return GetDataForSending(command, data, isOneFigure);
         }
 
         public static int GetFreePort()
@@ -68,7 +61,7 @@ namespace GraphicEditor
         }
 
 
-        private static byte[] GetDataForSending(Commands command, byte[] data, bool isOneFigure)
+        private static byte[] GetDataForSending(Command command, byte[] data, bool isOneFigure)
         {
             var package = new PackageForSending
             {

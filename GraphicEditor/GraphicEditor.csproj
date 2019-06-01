@@ -112,7 +112,7 @@
     </ApplicationDefinition>
     <Compile Include="Client\ConectInfo.cs" />
     <Compile Include="Client\Converter.cs" />
-    <Compile Include="Client\Enums.cs" />
+    <Compile Include="Client\Command.cs" />
     <Compile Include="Client\PackageForSending.cs" />
     <Compile Include="SerializationWindow.xaml.cs">
       <DependentUpon>SerializationWindow.xaml</DependentUpon>
