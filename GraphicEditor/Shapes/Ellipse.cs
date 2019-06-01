@@ -8,9 +8,11 @@ namespace GraphicEditor.Shapes
     [Serializable]
     public class Ellipse : Figure
     {
-        protected int width, height;
+        protected int Width, Height;
 
-        public Ellipse() { }
+        public Ellipse()
+        {
+        }
 
         public Ellipse(Point firstPoint, Point secondPoint, Brush color, double thickness)
             : base(firstPoint, secondPoint, color, thickness)
@@ -20,38 +22,46 @@ namespace GraphicEditor.Shapes
 
         protected void InitializeSize()
         {
-            width = (int) Math.Abs(secondPoint.X - firstPoint.X);
-            height = (int) Math.Abs(secondPoint.Y - firstPoint.Y);
+            Width = (int) Math.Abs(SecondPoint.X - FirstPoint.X);
+            Height = (int) Math.Abs(SecondPoint.Y - FirstPoint.Y);
         }
 
         public override void Draw(Canvas canvas)
         {
             var ellipse = new System.Windows.Shapes.Ellipse()
             {
-                Height = height,
-                Width = width,
-                Stroke = color,
-                StrokeThickness = thickness
+                Height = Height,
+                Width = Width,
+                Stroke = Color,
+                StrokeThickness = Thickness
             };
-
-            (double x, double y) = StartPoint();
-            Canvas.SetLeft(ellipse, x);
-            Canvas.SetTop(ellipse, y);
+            Tag = ellipse.GetHashCode();
+            StartPoint(ellipse, canvas);
             canvas.Children.Add(ellipse);
         }
 
-        private (double, double) StartPoint()
+        private void StartPoint(System.Windows.Shapes.Ellipse ellipse, Canvas canvas)
         {
-            if ((firstPoint.X < secondPoint.X) && (firstPoint.Y < secondPoint.Y))
-                return (firstPoint.X, firstPoint.Y);
-
-            if ((firstPoint.X < secondPoint.X) && (firstPoint.Y > secondPoint.Y))
-                return (firstPoint.X, secondPoint.Y);
-
-            if ((firstPoint.X > secondPoint.X) && (firstPoint.Y > secondPoint.Y))
-                return (secondPoint.X, secondPoint.Y);
-
-            return (secondPoint.X, firstPoint.Y);
+            if ((FirstPoint.X < SecondPoint.X) && (FirstPoint.Y <= SecondPoint.Y))
+            {
+                Canvas.SetLeft(ellipse, FirstPoint.X);
+                Canvas.SetTop(ellipse, FirstPoint.Y);
+            }
+            else if ((FirstPoint.X <= SecondPoint.X) && (FirstPoint.Y > SecondPoint.Y))
+            {
+                Canvas.SetLeft(ellipse, FirstPoint.X);
+                Canvas.SetBottom(ellipse, canvas.ActualHeight - FirstPoint.Y);
+            }
+            else if ((FirstPoint.X > SecondPoint.X) && (FirstPoint.Y >= SecondPoint.Y))
+            {
+                Canvas.SetRight(ellipse, canvas.ActualWidth - FirstPoint.X);
+                Canvas.SetBottom(ellipse, canvas.ActualHeight - FirstPoint.Y);
+            }
+            else
+            {
+                Canvas.SetTop(ellipse, FirstPoint.Y);
+                Canvas.SetRight(ellipse, canvas.ActualWidth - FirstPoint.X);
+            }
         }
     }
 }

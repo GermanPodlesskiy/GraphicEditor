@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Windows;
+using System.Text;
 using GraphicEditor.Client;
 using GraphicEditor.Shapes;
 
@@ -19,6 +19,7 @@ namespace GraphicEditor
                 client.Send(data, data.Length, ConectInfo.GroupAddr, usedPort);
             }
         }
+
         public static void SendBeginPaint(UdpClient client, bool isOneFigure)
         {
             var data = GetPointDataForSending(Commands.BeginPaint, new Line(), isOneFigure);
@@ -28,6 +29,12 @@ namespace GraphicEditor
         public static void SendFigure(Figure figure, UdpClient client, bool isOneFigure)
         {
             byte[] data = GetPointDataForSending(Commands.Point, figure, isOneFigure);
+            Send(data, client);
+        }
+
+        public static void SendMessage(UdpClient client, string message)
+        {
+            byte[] data = GetDataForSending(Commands.Message, Encoding.Default.GetBytes(message), true);
             Send(data, client);
         }
 

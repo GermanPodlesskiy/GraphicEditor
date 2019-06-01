@@ -26,34 +26,37 @@ namespace GraphicEditor.Shapes
     [XmlInclude(typeof(Triangle))]
     public abstract class Figure
     {
-        [NonSerialized] [XmlIgnore] protected Brush color;
-        [DataMember] public Point firstPoint;
-        [DataMember] public Point secondPoint;
-        [DataMember] public double thickness;
-        [DataMember] [NonSerialized] public Color serializedColor;
+        [DataMember] public Point FirstPoint;
+        [DataMember] public Point SecondPoint;
+        [DataMember] public double Thickness;
+        [DataMember] [NonSerialized] public Color SerializedColor;
         [XmlIgnore] public byte A, G, R, B;
+        [NonSerialized] [XmlIgnore] protected Brush Color;
+        [NonSerialized] [XmlIgnore] public int Tag;
 
-        protected Figure() { }
+        protected Figure()
+        {
+        }
 
         protected Figure(Point firstPoint, Point secondPoint, Brush color, double thickness)
         {
-            this.firstPoint = firstPoint;
-            this.secondPoint = secondPoint;
-            this.color = color;
-            this.thickness = thickness;
+            FirstPoint = firstPoint;
+            SecondPoint = secondPoint;
+            Color = color;
+            Thickness = thickness;
 
             var colorTemp = (Color) color.GetValue(SolidColorBrush.ColorProperty);
-            serializedColor.A = A = colorTemp.A;
-            serializedColor.G = G = colorTemp.G;
-            serializedColor.R = R = colorTemp.R;
-            serializedColor.B = B = colorTemp.B;
+            SerializedColor.A = A = colorTemp.A;
+            SerializedColor.G = G = colorTemp.G;
+            SerializedColor.R = R = colorTemp.R;
+            SerializedColor.B = B = colorTemp.B;
         }
 
         public void SetColor()
         {
-            color = serializedColor.ToString() == "#00000000"
+            Color = SerializedColor.ToString() == "#00000000"
                 ? new SolidColorBrush(new Color() {A = A, G = G, R = R, B = B})
-                : new SolidColorBrush(serializedColor);
+                : new SolidColorBrush(SerializedColor);
         }
 
         public abstract void Draw(Canvas canvas);

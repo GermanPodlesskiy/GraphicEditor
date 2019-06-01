@@ -9,9 +9,11 @@ namespace GraphicEditor.Shapes
     [Serializable]
     public class Rectangle : Figure
     {
-        protected int width, height;
+        protected int Width, Height;
 
-        public Rectangle() { }
+        public Rectangle()
+        {
+        }
 
         public Rectangle(Point firstPoint, Point secondPoint, Brush color, double thickness)
             : base(firstPoint, secondPoint, color, thickness)
@@ -21,38 +23,48 @@ namespace GraphicEditor.Shapes
 
         protected void InitializeSize()
         {
-            width = (int) Math.Abs(secondPoint.X - firstPoint.X);
-            height = (int) Math.Abs(secondPoint.Y - firstPoint.Y);
+            Width = (int) Math.Abs(SecondPoint.X - FirstPoint.X);
+            Height = (int) Math.Abs(SecondPoint.Y - FirstPoint.Y);
         }
 
         public override void Draw(Canvas canvas)
         {
             var rectangle = new System.Windows.Shapes.Rectangle()
             {
-                Height = height,
-                Width = width,
-                Stroke = color,
-                StrokeThickness = thickness
+                Height = Height,
+                Width = Width,
+                Stroke = Color,
+                StrokeThickness = Thickness,
+                Tag = Tag
             };
-
-            (double item1, double item2) = StartPoint();
-            Canvas.SetLeft(rectangle, item1);
-            Canvas.SetTop(rectangle, item2);
+            Tag = rectangle.GetHashCode();
+            StartPoint(rectangle, canvas);
             canvas.Children.Add(rectangle);
         }
 
-        protected (double, double) StartPoint()
+        protected void StartPoint(System.Windows.Shapes.Rectangle  rectangle, Canvas canvas)
         {
-            if ((firstPoint.X < secondPoint.X) && (firstPoint.Y <= secondPoint.Y))
-                return (firstPoint.X, firstPoint.Y);
-
-            if ((firstPoint.X <= secondPoint.X) && (firstPoint.Y >= secondPoint.Y))
-                return (firstPoint.X, secondPoint.Y);
-
-            if ((firstPoint.X >= secondPoint.X) && (firstPoint.Y > secondPoint.Y))
-                return (secondPoint.X, secondPoint.Y);
-
-            return (secondPoint.X, firstPoint.Y);
+            if ((FirstPoint.X < SecondPoint.X) && (FirstPoint.Y <= SecondPoint.Y))
+            {
+                Canvas.SetLeft(rectangle, FirstPoint.X);
+                Canvas.SetTop(rectangle, FirstPoint.Y);
+            }
+            else if ((FirstPoint.X <= SecondPoint.X) && (FirstPoint.Y > SecondPoint.Y))
+            {
+                Canvas.SetLeft(rectangle, FirstPoint.X);
+                Canvas.SetBottom(rectangle, canvas.ActualHeight - FirstPoint.Y);
+            }
+            else
+            if ((FirstPoint.X > SecondPoint.X) && (FirstPoint.Y >= SecondPoint.Y))
+            {
+                Canvas.SetRight(rectangle, canvas.ActualWidth - FirstPoint.X);
+                Canvas.SetBottom(rectangle, canvas.ActualHeight - FirstPoint.Y);
+            }
+            else
+            {
+                Canvas.SetTop(rectangle, FirstPoint.Y);
+                Canvas.SetRight(rectangle, canvas.ActualWidth - FirstPoint.X);
+            }
         }
     }
 }

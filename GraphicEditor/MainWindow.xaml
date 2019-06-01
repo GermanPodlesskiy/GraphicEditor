@@ -8,56 +8,147 @@
         Title="GraphicEditor" Height="700" Width="900">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-            <GradientStop Color="#FFB7E246"/>
-            <GradientStop Color="#FFFFE0E0" Offset="1"/>
+            <GradientStop Color="#FFB7E246" />
+            <GradientStop Color="#FFFFE0E0" Offset="1" />
         </LinearGradientBrush>
     </Window.Background>
     <Grid>
-        <Grid Visibility="Visible">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="535*"/>
-                <RowDefinition Height="111*"/>
-            </Grid.RowDefinitions>
-            <DockPanel Grid.Row="0">
-                <Menu DockPanel.Dock="Top" Background="#FFF6E0CD" Height="23">
-                    <MenuItem Header="_File" Height="23" Width="51" Background="#FFF5E0CA" BorderBrush="#FFF5A36F" OpacityMask="White">
-                        <MenuItem Header="_Open" Background="White" Click="MenuItem_Click_1"/>
-                        <MenuItem Header="_Save as..." Click="MenuItem_Click" Background="White"/>
-                        <MenuItem Header="_Close" Background="White"/>
-                    </MenuItem>
-                </Menu>
-                <StackPanel></StackPanel>
-            </DockPanel>
-            <Canvas ClipToBounds="True" x:Name="CanvasMain"  Grid.Row="1" Margin="0,0,0,1" Cursor="Arrow" Background="White" MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove"/>
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" MinWidth="127" />
-                    <ColumnDefinition Width="Auto" MinWidth="66"/>
-                    <ColumnDefinition Width="Auto" MinWidth="127"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="345*" />
+        </Grid.ColumnDefinitions>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top" Background="#FFF6E0CD" Height="23">
+                <MenuItem Header="_File" Height="23" Width="51" Background="#FFF5E0CA" BorderBrush="#FFF5A36F"
+                          OpacityMask="White">
+                    <MenuItem Header="_Open" Background="White" Click="MenuItem_Click_1" />
+                    <MenuItem Header="_Save as..." Click="MenuItem_Click" Background="White" />
+                    <MenuItem Header="_Close" Background="White" />
+                </MenuItem>
+                <MenuItem Header="_Network" Height="23" Width="124" Background="#FFF5E0CA"
+                          BorderBrush="#FFF5A36F"
+                          OpacityMask="White">
+                    <MenuItem Header="_Connect" Background="White" Click="Connect" />
+                    <MenuItem Header="_Disconnect" Background="White" Click="MenuItem_Click_2" />
+                </MenuItem>
+            </Menu>
+            <StackPanel />
+        </DockPanel>
+        <Grid Name="GridMain" Grid.Column="0" Visibility="Visible" Margin="0,23,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="365*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid Name="GridGraphic">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" MinHeight="64"/>
-                    <RowDefinition Height="Auto" MinHeight="27"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="537*" />
+                    <RowDefinition Height="109*" />
                 </Grid.RowDefinitions>
-                <Button x:Name="Clear" Grid.Row="1" Grid.Column="2" Content="Clear" HorizontalAlignment="Stretch" Margin="10,10,43,1" Width="Auto" Click="Clear_Click"/>
-                <Label x:Name="LabelX" Grid.Row="0" Grid.Column="0" Content="X =" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="61" Height="26"/>
-                <Label x:Name="LabelY" Grid.Row="0" Grid.Column="0" Content="Y =" HorizontalAlignment="Left" Margin="71,10,0,0" VerticalAlignment="Top" Width="56" Height="26"/>
-                <Image x:Name="LinePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/../Pictures/Line.jpg" HorizontalAlignment="Left" Height="25" Margin="10,36,0,0" VerticalAlignment="Top" Width="25" Tag="0" MouseDown="Picture_MouseDown"/>
-                <Image x:Name="EllipsePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Ellipse.jpg" HorizontalAlignment="Left" Height="25" Margin="40,36,0,0" VerticalAlignment="Top" Width="25" Tag="2" MouseDown="Picture_MouseDown"/>
-                <Image x:Name="CirclePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Circle.jpg" HorizontalAlignment="Left" Height="25" Margin="71,36,0,0" VerticalAlignment="Top" Width="25" Tag="1" MouseDown="Picture_MouseDown"/>
-                <Image x:Name="RectanglePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Rectangle.jpg" HorizontalAlignment="Left" Height="25" Margin="101,36,0,0" VerticalAlignment="Top" Width="25" Tag="3" MouseDown="Picture_MouseDown"/>
-                <Image x:Name="SquarePicture" Grid.Row="1" Grid.Column="0" Source="Pictures/Square.jpg" HorizontalAlignment="Left" Height="25" Margin="10,5,0,0" VerticalAlignment="Top" Width="25" Tag="4" MouseDown="Picture_MouseDown"/>
-                <Image x:Name="TrianglePicture" Grid.Row="1" Grid.Column="0" Source="Pictures/Triangle.jpg" HorizontalAlignment="Left" Height="25" Margin="40,5,0,0" VerticalAlignment="Top" Width="25" Tag="5" MouseDown="Picture_MouseDown"/>
-                <Image x:Name="RightTrianglePicture"  Grid.Row="1" Grid.Column="0" Source="Pictures/RightTriangle.jpg" HorizontalAlignment="Left" Height="25" Margin="71,5,0,0" VerticalAlignment="Top" Width="25" Tag="6" MouseDown="Picture_MouseDown" />
-                <Image x:Name="RedoPicture" Grid.Row="0" Grid.Column="1" Source="Pictures/Redo.jpg" HorizontalAlignment="Left" Margin="76,36,0,2" Width="25" MouseDown="RedoPicture_MouseDown"/>
-                <Image x:Name="UndoPicture" Grid.Row="0" Grid.Column="1" Source="Pictures/Undo.jpg" HorizontalAlignment="Left" Margin="34,36,0,1" Width="25" MouseDown="UndoPicture_MouseDown"/>
-                <Slider x:Name="SliderThickness" Grid.Row="0" Grid.Column="2" Margin="10,43,6,4" Maximum="100" Value="3"/>
-                <Border x:Name="ColorBorder"  Grid.Row="1" Grid.Column="1" BorderThickness="1" HorizontalAlignment="Left" Margin="32,4,0,1" Width="70" Background="Blue" MouseDown="ColorBorder_MouseDown" Grid.ColumnSpan="2"/>
-                <Button Content="Button" Grid.Column="3" HorizontalAlignment="Left" Margin="130,42,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+                <Canvas ClipToBounds="True" x:Name="CanvasMain" Grid.Row="1" Margin="0,0,0,0" Cursor="Arrow"
+                        Background="White" MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp"
+                        MouseMove="Canvas_MouseMove" Grid.Column="0"/>
+                <Grid Grid.Row="2" Grid.Column="0" Margin="0,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="127" />
+                        <ColumnDefinition Width="Auto" MinWidth="66" />
+                        <ColumnDefinition Width="Auto" MinWidth="127" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" MinHeight="64" />
+                        <RowDefinition Height="Auto" MinHeight="27" />
+                    </Grid.RowDefinitions>
+                    <Button x:Name="Clear" Grid.Row="1" Grid.Column="2" Content="Clear" HorizontalAlignment="Stretch"
+                            Margin="10,10,43,1" Width="Auto" Click="Clear_Click" />
+                    <Label x:Name="LabelX" Grid.Row="0" Grid.Column="0" Content="X =" HorizontalAlignment="Left"
+                           Margin="10,10,0,0" VerticalAlignment="Top" Width="61" Height="26" />
+                    <Label x:Name="LabelY" Grid.Row="0" Grid.Column="0" Content="Y =" HorizontalAlignment="Left"
+                           Margin="71,10,0,0" VerticalAlignment="Top" Width="56" Height="26" />
+                    <Image x:Name="LinePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/../Pictures/Line.jpg"
+                           HorizontalAlignment="Left" Height="25" Margin="10,36,0,0" VerticalAlignment="Top" Width="25"
+                           Tag="0" MouseDown="Picture_MouseDown" />
+                    <Image x:Name="EllipsePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Ellipse.jpg"
+                           HorizontalAlignment="Left" Height="25" Margin="40,36,0,0" VerticalAlignment="Top" Width="25"
+                           Tag="2" MouseDown="Picture_MouseDown" />
+                    <Image x:Name="CirclePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Circle.jpg"
+                           HorizontalAlignment="Left" Height="25" Margin="71,36,0,0" VerticalAlignment="Top" Width="25"
+                           Tag="1" MouseDown="Picture_MouseDown" />
+                    <Image x:Name="RectanglePicture" Grid.Row="0" Grid.Column="0" Source="Pictures/Rectangle.jpg"
+                           HorizontalAlignment="Left" Margin="101,36,0,0" Width="25" Tag="3"
+                           MouseDown="Picture_MouseDown"
+                           Height="26" VerticalAlignment="Top" />
+                    <Image x:Name="SquarePicture" Grid.Row="1" Grid.Column="0" Source="Pictures/Square.jpg"
+                           HorizontalAlignment="Left" Height="25" Margin="10,5,0,0" VerticalAlignment="Top" Width="25"
+                           Tag="4" MouseDown="Picture_MouseDown" />
+                    <Image x:Name="TrianglePicture" Grid.Row="1" Grid.Column="0" Source="Pictures/Triangle.jpg"
+                           HorizontalAlignment="Left" Height="25" Margin="40,5,0,0" VerticalAlignment="Top" Width="25"
+                           Tag="5" MouseDown="Picture_MouseDown" />
+                    <Image x:Name="RightTrianglePicture" Grid.Row="1" Grid.Column="0"
+                           Source="Pictures/RightTriangle.jpg"
+                           HorizontalAlignment="Left" Height="25" Margin="71,5,0,0" VerticalAlignment="Top" Width="25"
+                           Tag="6" MouseDown="Picture_MouseDown" />
+                    <Image x:Name="RedoPicture" Grid.Row="0" Grid.Column="1" Source="Pictures/Redo.jpg"
+                           HorizontalAlignment="Left" Margin="76,43,0,0" Width="25" MouseDown="RedoPicture_MouseDown"
+                           Height="25" VerticalAlignment="Top" />
+                    <Image x:Name="UndoPicture" Grid.Row="0" Grid.Column="1" Source="Pictures/Undo.jpg"
+                           HorizontalAlignment="Left" Margin="32,43,0,0" Width="25" MouseDown="UndoPicture_MouseDown"
+                           Height="25" VerticalAlignment="Top" />
+                    <Slider x:Name="SliderThickness" Grid.Row="0" Grid.Column="2" Margin="10,43,6,4" Maximum="100"
+                            Value="3" />
+                    <Border x:Name="ColorBorder" Grid.Row="1" Grid.Column="1" BorderThickness="1"
+                            HorizontalAlignment="Left" Margin="32,4,0,1" Width="70" Background="Blue"
+                            MouseDown="ColorBorder_MouseDown" Grid.ColumnSpan="2" />
+                </Grid>
             </Grid>
-
+            <Grid Name="GridChat" Grid.Column="1" Visibility="Hidden" Width="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" MinHeight="23" />
+                    <RowDefinition />
+                    <RowDefinition Height="109" />
+                </Grid.RowDefinitions>
+                <TextBlock Name="TextBlockStatus" Grid.Row="0" TextAlignment="Center" Background="#FFF6E0CD"
+                           Grid.RowSpan="3">
+                    Welcome to chat!
+                </TextBlock>
+                <TextBox Name="TextBoxMessages" Grid.Row="3" IsReadOnly="True"
+                         TextWrapping="Wrap" Background="#FFFFDABB"/>
+                <TextBox Name="TextBoxEnter" Grid.Row="4" TextWrapping="Wrap" Margin="0,11,0,25"
+                         KeyDown="TextBoxEnter_KeyDown" />
+            </Grid>
+        </Grid>
+        <Grid Name="GridRegister" Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" TextAlignment="Center"
+                       VerticalAlignment="Center" TextWrapping="Wrap" />
+            <Grid Grid.Column="1" Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5">Username:</TextBlock>
+                <TextBox Name="TextBoxUsername" Grid.Row="0" Grid.Column="1" Margin="0 5" Padding="2"
+                         TextChanged="TextBoxUsername_TextChanged" />
+                <Button Name="ButtonEnter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" IsEnabled="False"
+                        Padding="10" Click="Enter">
+                    Enter
+                </Button>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

@@ -5,6 +5,7 @@
         Point,
         BeginPaint,
         Delete,
-        Load,
+        Move,
+        Message
     }
 }

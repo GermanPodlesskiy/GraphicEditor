@@ -8,63 +8,70 @@ namespace GraphicEditor.Shapes
     [Serializable]
     public class RightTriangle : Triangle
     {
-        [NonSerialized] private PointCollection points = new PointCollection();
-        [NonSerialized] private Point left, up, right;
+        [NonSerialized] private PointCollection _points;
+        [NonSerialized] private Point _left, _up, _right;
 
-        public RightTriangle() { }
+        public RightTriangle()
+        {
+        }
 
         public RightTriangle(Point firstPoint, Point secondPoint, Brush color, double thickness)
-            : base(firstPoint, secondPoint, color, thickness) { }
+            : base(firstPoint, secondPoint, color, thickness)
+        {
+        }
 
         public override void Draw(Canvas canvas)
         {
-            if ((firstPoint.X < secondPoint.X) && (firstPoint.Y < secondPoint.Y))
+            _points = new PointCollection();
+            if ((FirstPoint.X < SecondPoint.X) && (FirstPoint.Y < SecondPoint.Y))
             {
-                up.X = firstPoint.X;
-                up.Y = firstPoint.Y;
-                left.X = firstPoint.X;
-                left.Y = secondPoint.Y;
-                right.X = secondPoint.X;
-                right.Y = secondPoint.Y;
+                _up.X = FirstPoint.X;
+                _up.Y = FirstPoint.Y;
+                _left.X = FirstPoint.X;
+                _left.Y = SecondPoint.Y;
+                _right.X = SecondPoint.X;
+                _right.Y = SecondPoint.Y;
             }
-            else if ((firstPoint.X < secondPoint.X) && (firstPoint.Y > secondPoint.Y))
+            else if ((FirstPoint.X < SecondPoint.X) && (FirstPoint.Y > SecondPoint.Y))
             {
-                up.X = firstPoint.X;
-                up.Y = secondPoint.Y;
-                left.X = firstPoint.X;
-                left.Y = firstPoint.Y;
-                right.X = secondPoint.X;
-                right.Y = firstPoint.Y;
+                _up.X = FirstPoint.X;
+                _up.Y = SecondPoint.Y;
+                _left.X = FirstPoint.X;
+                _left.Y = FirstPoint.Y;
+                _right.X = SecondPoint.X;
+                _right.Y = FirstPoint.Y;
             }
-            else if ((firstPoint.X > secondPoint.X) && (firstPoint.Y < secondPoint.Y))
+            else if ((FirstPoint.X > SecondPoint.X) && (FirstPoint.Y < SecondPoint.Y))
             {
-                up.X = secondPoint.X;
-                up.Y = firstPoint.Y;
-                left.X = secondPoint.X;
-                left.Y = secondPoint.Y;
-                right.X = firstPoint.X;
-                right.Y = secondPoint.Y;
+                _up.X = SecondPoint.X;
+                _up.Y = FirstPoint.Y;
+                _left.X = SecondPoint.X;
+                _left.Y = SecondPoint.Y;
+                _right.X = FirstPoint.X;
+                _right.Y = SecondPoint.Y;
             }
             else
             {
-                up.X = secondPoint.X;
-                up.Y = secondPoint.Y;
-                left.X = secondPoint.X;
-                left.Y = firstPoint.Y;
-                right.X = firstPoint.X;
-                right.Y = firstPoint.Y;
+                _up.X = SecondPoint.X;
+                _up.Y = SecondPoint.Y;
+                _left.X = SecondPoint.X;
+                _left.Y = FirstPoint.Y;
+                _right.X = FirstPoint.X;
+                _right.Y = FirstPoint.Y;
             }
 
-            points.Add(up);
-            points.Add(left);
-            points.Add(right);
+            _points.Add(_up);
+            _points.Add(_left);
+            _points.Add(_right);
 
             var triangle = new System.Windows.Shapes.Polygon()
             {
-                Points = points,
-                Stroke = color,
-                StrokeThickness = thickness
+                Points = _points,
+                Stroke = Color,
+                StrokeThickness = Thickness,
+                Tag = Tag
             };
+            Tag = triangle.GetHashCode();
             canvas.Children.Add(triangle);
         }
     }

@@ -8,14 +8,18 @@ namespace GraphicEditor.Shapes
     [Serializable]
     public class Circle : Ellipse
     {
-        public Circle() { }
+        public Circle()
+        {
+        }
 
         public Circle(Point firstPoint, Point secondPoint, Brush color, double thickness)
-            : base(firstPoint, secondPoint, color, thickness) { }
+            : base(firstPoint, secondPoint, color, thickness)
+        {
+        }
 
         public override void Draw(Canvas canvas)
         {
-            width = height = (int) Math.Abs(secondPoint.X - firstPoint.X);
+            Width = Height = (int) Math.Abs(SecondPoint.X - FirstPoint.X);
             base.Draw(canvas);
         }
     }
